@@ -1,0 +1,5 @@
+/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/fake-target-for-clion.dir
+/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/PC_Netzwerk.dir
+/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/PC_ROBOT.dir
