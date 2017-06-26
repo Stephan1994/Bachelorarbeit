@@ -50,6 +50,7 @@
 #include <sys/ipc.h>
 #include <sys/select.h>
 #include <fcntl.h>
+#define NETZWERK_LIB
 #include "Netzwerk.h"
 
 void sig_handler(int signo);

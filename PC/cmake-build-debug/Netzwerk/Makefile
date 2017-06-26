@@ -80,14 +80,14 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/progress.marks
-	$(MAKE) -f CMakeFiles/Makefile2 all
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles /home/stephan/Bachelorarbeit/PC/cmake-build-debug/Netzwerk/CMakeFiles/progress.marks
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Netzwerk/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
 clean:
-	$(MAKE) -f CMakeFiles/Makefile2 clean
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Netzwerk/clean
 .PHONY : clean
 
 # The main clean target
@@ -97,98 +97,87 @@ clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Netzwerk/preinstall
 .PHONY : preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	$(MAKE) -f CMakeFiles/Makefile2 preinstall
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Netzwerk/preinstall
 .PHONY : preinstall/fast
 
 # clear depends
 depend:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
-#=============================================================================
-# Target rules for targets named PC
+# Convenience name for target.
+Netzwerk/CMakeFiles/Netzwerk.dir/rule:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f CMakeFiles/Makefile2 Netzwerk/CMakeFiles/Netzwerk.dir/rule
+.PHONY : Netzwerk/CMakeFiles/Netzwerk.dir/rule
 
-# Build rule for target.
-PC: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 PC
-.PHONY : PC
+# Convenience name for target.
+Netzwerk: Netzwerk/CMakeFiles/Netzwerk.dir/rule
 
-# fast build rule for target.
-PC/fast:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/build
-.PHONY : PC/fast
-
-#=============================================================================
-# Target rules for targets named Netzwerk
-
-# Build rule for target.
-Netzwerk: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 Netzwerk
 .PHONY : Netzwerk
 
 # fast build rule for target.
 Netzwerk/fast:
-	$(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/build
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/build
 .PHONY : Netzwerk/fast
 
-Robot.o: Robot.cpp.o
+Funktion_zum_Umwandeln.o: Funktion_zum_Umwandeln.c.o
 
-.PHONY : Robot.o
-
-# target to build an object file
-Robot.cpp.o:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Robot.cpp.o
-.PHONY : Robot.cpp.o
-
-Robot.i: Robot.cpp.i
-
-.PHONY : Robot.i
-
-# target to preprocess a source file
-Robot.cpp.i:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Robot.cpp.i
-.PHONY : Robot.cpp.i
-
-Robot.s: Robot.cpp.s
-
-.PHONY : Robot.s
-
-# target to generate assembly for a file
-Robot.cpp.s:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Robot.cpp.s
-.PHONY : Robot.cpp.s
-
-main.o: main.cpp.o
-
-.PHONY : main.o
+.PHONY : Funktion_zum_Umwandeln.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/main.cpp.o
-.PHONY : main.cpp.o
+Funktion_zum_Umwandeln.c.o:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.o
+.PHONY : Funktion_zum_Umwandeln.c.o
 
-main.i: main.cpp.i
+Funktion_zum_Umwandeln.i: Funktion_zum_Umwandeln.c.i
 
-.PHONY : main.i
+.PHONY : Funktion_zum_Umwandeln.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/main.cpp.i
-.PHONY : main.cpp.i
+Funktion_zum_Umwandeln.c.i:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.i
+.PHONY : Funktion_zum_Umwandeln.c.i
 
-main.s: main.cpp.s
+Funktion_zum_Umwandeln.s: Funktion_zum_Umwandeln.c.s
 
-.PHONY : main.s
+.PHONY : Funktion_zum_Umwandeln.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/main.cpp.s
-.PHONY : main.cpp.s
+Funktion_zum_Umwandeln.c.s:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.s
+.PHONY : Funktion_zum_Umwandeln.c.s
+
+ProzessPi.o: ProzessPi.c.o
+
+.PHONY : ProzessPi.o
+
+# target to build an object file
+ProzessPi.c.o:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/ProzessPi.c.o
+.PHONY : ProzessPi.c.o
+
+ProzessPi.i: ProzessPi.c.i
+
+.PHONY : ProzessPi.i
+
+# target to preprocess a source file
+ProzessPi.c.i:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/ProzessPi.c.i
+.PHONY : ProzessPi.c.i
+
+ProzessPi.s: ProzessPi.c.s
+
+.PHONY : ProzessPi.s
+
+# target to generate assembly for a file
+ProzessPi.c.s:
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/ProzessPi.c.s
+.PHONY : ProzessPi.c.s
 
 # Help Target
 help:
@@ -198,14 +187,13 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... PC"
 	@echo "... Netzwerk"
-	@echo "... Robot.o"
-	@echo "... Robot.i"
-	@echo "... Robot.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... Funktion_zum_Umwandeln.o"
+	@echo "... Funktion_zum_Umwandeln.i"
+	@echo "... Funktion_zum_Umwandeln.s"
+	@echo "... ProzessPi.o"
+	@echo "... ProzessPi.i"
+	@echo "... ProzessPi.s"
 .PHONY : help
 
 
@@ -217,6 +205,6 @@ help:
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
+	cd /home/stephan/Bachelorarbeit/PC/cmake-build-debug && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 0
 .PHONY : cmake_check_build_system
 

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define PROZESSPI_LIB
 #include "ProzessPi.h"
 
 

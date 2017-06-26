@@ -60,103 +60,94 @@ CMAKE_SOURCE_DIR = /home/stephan/Bachelorarbeit/PC
 CMAKE_BINARY_DIR = /home/stephan/Bachelorarbeit/PC/cmake-build-debug
 
 #=============================================================================
-# Target rules for target CMakeFiles/fake-target-for-clion.dir
+# Target rules for target CMakeFiles/PC.dir
 
 # All Build rule for target.
-CMakeFiles/fake-target-for-clion.dir/all:
-	$(MAKE) -f CMakeFiles/fake-target-for-clion.dir/build.make CMakeFiles/fake-target-for-clion.dir/depend
-	$(MAKE) -f CMakeFiles/fake-target-for-clion.dir/build.make CMakeFiles/fake-target-for-clion.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=3,4,5,6,7,8,9,10 "Built target fake-target-for-clion"
-.PHONY : CMakeFiles/fake-target-for-clion.dir/all
+CMakeFiles/PC.dir/all: Netzwerk/CMakeFiles/Netzwerk.dir/all
+	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/depend
+	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=4,5,6 "Built target PC"
+.PHONY : CMakeFiles/PC.dir/all
 
 # Include target in all.
-all: CMakeFiles/fake-target-for-clion.dir/all
+all: CMakeFiles/PC.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/fake-target-for-clion.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 8
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/fake-target-for-clion.dir/all
+CMakeFiles/PC.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 6
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/PC.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/fake-target-for-clion.dir/rule
+.PHONY : CMakeFiles/PC.dir/rule
 
 # Convenience name for target.
-fake-target-for-clion: CMakeFiles/fake-target-for-clion.dir/rule
+PC: CMakeFiles/PC.dir/rule
 
-.PHONY : fake-target-for-clion
-
-# clean rule for target.
-CMakeFiles/fake-target-for-clion.dir/clean:
-	$(MAKE) -f CMakeFiles/fake-target-for-clion.dir/build.make CMakeFiles/fake-target-for-clion.dir/clean
-.PHONY : CMakeFiles/fake-target-for-clion.dir/clean
+.PHONY : PC
 
 # clean rule for target.
-clean: CMakeFiles/fake-target-for-clion.dir/clean
+CMakeFiles/PC.dir/clean:
+	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/clean
+.PHONY : CMakeFiles/PC.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/PC.dir/clean
 
 .PHONY : clean
 
 #=============================================================================
-# Target rules for target CMakeFiles/PC_Netzwerk.dir
+# Directory level rules for directory Netzwerk
 
-# All Build rule for target.
-CMakeFiles/PC_Netzwerk.dir/all:
-	$(MAKE) -f CMakeFiles/PC_Netzwerk.dir/build.make CMakeFiles/PC_Netzwerk.dir/depend
-	$(MAKE) -f CMakeFiles/PC_Netzwerk.dir/build.make CMakeFiles/PC_Netzwerk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=1 "Built target PC_Netzwerk"
-.PHONY : CMakeFiles/PC_Netzwerk.dir/all
+# Convenience name for "all" pass in the directory.
+Netzwerk/all: Netzwerk/CMakeFiles/Netzwerk.dir/all
 
-# Build rule for subdir invocation for target.
-CMakeFiles/PC_Netzwerk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 1
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/PC_Netzwerk.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/PC_Netzwerk.dir/rule
+.PHONY : Netzwerk/all
 
-# Convenience name for target.
-PC_Netzwerk: CMakeFiles/PC_Netzwerk.dir/rule
+# Convenience name for "clean" pass in the directory.
+Netzwerk/clean: Netzwerk/CMakeFiles/Netzwerk.dir/clean
 
-.PHONY : PC_Netzwerk
+.PHONY : Netzwerk/clean
 
-# clean rule for target.
-CMakeFiles/PC_Netzwerk.dir/clean:
-	$(MAKE) -f CMakeFiles/PC_Netzwerk.dir/build.make CMakeFiles/PC_Netzwerk.dir/clean
-.PHONY : CMakeFiles/PC_Netzwerk.dir/clean
+# Convenience name for "preinstall" pass in the directory.
+Netzwerk/preinstall:
 
-# clean rule for target.
-clean: CMakeFiles/PC_Netzwerk.dir/clean
-
-.PHONY : clean
+.PHONY : Netzwerk/preinstall
 
 #=============================================================================
-# Target rules for target CMakeFiles/PC_ROBOT.dir
+# Target rules for target Netzwerk/CMakeFiles/Netzwerk.dir
 
 # All Build rule for target.
-CMakeFiles/PC_ROBOT.dir/all:
-	$(MAKE) -f CMakeFiles/PC_ROBOT.dir/build.make CMakeFiles/PC_ROBOT.dir/depend
-	$(MAKE) -f CMakeFiles/PC_ROBOT.dir/build.make CMakeFiles/PC_ROBOT.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=2 "Built target PC_ROBOT"
-.PHONY : CMakeFiles/PC_ROBOT.dir/all
+Netzwerk/CMakeFiles/Netzwerk.dir/all:
+	$(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/depend
+	$(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=1,2,3 "Built target Netzwerk"
+.PHONY : Netzwerk/CMakeFiles/Netzwerk.dir/all
+
+# Include target in all.
+all: Netzwerk/CMakeFiles/Netzwerk.dir/all
+
+.PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/PC_ROBOT.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 1
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/PC_ROBOT.dir/all
+Netzwerk/CMakeFiles/Netzwerk.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 Netzwerk/CMakeFiles/Netzwerk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/PC_ROBOT.dir/rule
+.PHONY : Netzwerk/CMakeFiles/Netzwerk.dir/rule
 
 # Convenience name for target.
-PC_ROBOT: CMakeFiles/PC_ROBOT.dir/rule
+Netzwerk: Netzwerk/CMakeFiles/Netzwerk.dir/rule
 
-.PHONY : PC_ROBOT
-
-# clean rule for target.
-CMakeFiles/PC_ROBOT.dir/clean:
-	$(MAKE) -f CMakeFiles/PC_ROBOT.dir/build.make CMakeFiles/PC_ROBOT.dir/clean
-.PHONY : CMakeFiles/PC_ROBOT.dir/clean
+.PHONY : Netzwerk
 
 # clean rule for target.
-clean: CMakeFiles/PC_ROBOT.dir/clean
+Netzwerk/CMakeFiles/Netzwerk.dir/clean:
+	$(MAKE) -f Netzwerk/CMakeFiles/Netzwerk.dir/build.make Netzwerk/CMakeFiles/Netzwerk.dir/clean
+.PHONY : Netzwerk/CMakeFiles/Netzwerk.dir/clean
+
+# clean rule for target.
+clean: Netzwerk/CMakeFiles/Netzwerk.dir/clean
 
 .PHONY : clean
 

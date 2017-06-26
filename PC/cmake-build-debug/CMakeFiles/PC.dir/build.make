@@ -57,114 +57,18 @@ include CMakeFiles/PC.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/PC.dir/flags.make
 
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o: CMakeFiles/PC.dir/flags.make
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o: ../Netzwerk/Funktion_zum_Umwandeln.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o   -c /home/stephan/Bachelorarbeit/PC/Netzwerk/Funktion_zum_Umwandeln.c
-
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.i"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Netzwerk/Funktion_zum_Umwandeln.c > CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.i
-
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.s"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Netzwerk/Funktion_zum_Umwandeln.c -o CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.s
-
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.requires:
-
-.PHONY : CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.requires
-
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.provides: CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.requires
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.provides.build
-.PHONY : CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.provides
-
-CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.provides.build: CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o
-
-
-CMakeFiles/PC.dir/Netzwerk/main.c.o: CMakeFiles/PC.dir/flags.make
-CMakeFiles/PC.dir/Netzwerk/main.c.o: ../Netzwerk/main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/PC.dir/Netzwerk/main.c.o"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/PC.dir/Netzwerk/main.c.o   -c /home/stephan/Bachelorarbeit/PC/Netzwerk/main.c
-
-CMakeFiles/PC.dir/Netzwerk/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/PC.dir/Netzwerk/main.c.i"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Netzwerk/main.c > CMakeFiles/PC.dir/Netzwerk/main.c.i
-
-CMakeFiles/PC.dir/Netzwerk/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/PC.dir/Netzwerk/main.c.s"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Netzwerk/main.c -o CMakeFiles/PC.dir/Netzwerk/main.c.s
-
-CMakeFiles/PC.dir/Netzwerk/main.c.o.requires:
-
-.PHONY : CMakeFiles/PC.dir/Netzwerk/main.c.o.requires
-
-CMakeFiles/PC.dir/Netzwerk/main.c.o.provides: CMakeFiles/PC.dir/Netzwerk/main.c.o.requires
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Netzwerk/main.c.o.provides.build
-.PHONY : CMakeFiles/PC.dir/Netzwerk/main.c.o.provides
-
-CMakeFiles/PC.dir/Netzwerk/main.c.o.provides.build: CMakeFiles/PC.dir/Netzwerk/main.c.o
-
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o: CMakeFiles/PC.dir/flags.make
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o: ../Netzwerk/Netzwerk.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o   -c /home/stephan/Bachelorarbeit/PC/Netzwerk/Netzwerk.c
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.i"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Netzwerk/Netzwerk.c > CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.i
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.s"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Netzwerk/Netzwerk.c -o CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.s
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.requires:
-
-.PHONY : CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.requires
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.provides: CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.requires
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.provides.build
-.PHONY : CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.provides
-
-CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.provides.build: CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o
-
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o: CMakeFiles/PC.dir/flags.make
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o: ../Netzwerk/ProzessPi.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o   -c /home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.c
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.i"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.c > CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.i
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.s"
-	/usr/bin/cc  $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.c -o CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.s
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.requires:
-
-.PHONY : CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.requires
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.provides: CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.requires
-	$(MAKE) -f CMakeFiles/PC.dir/build.make CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.provides.build
-.PHONY : CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.provides
-
-CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.provides.build: CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o
-
-
 CMakeFiles/PC.dir/main.cpp.o: CMakeFiles/PC.dir/flags.make
 CMakeFiles/PC.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/PC.dir/main.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PC.dir/main.cpp.o -c /home/stephan/Bachelorarbeit/PC/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/PC.dir/main.cpp.o"
+	g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PC.dir/main.cpp.o -c /home/stephan/Bachelorarbeit/PC/main.cpp
 
 CMakeFiles/PC.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PC.dir/main.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/stephan/Bachelorarbeit/PC/main.cpp > CMakeFiles/PC.dir/main.cpp.i
+	g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/stephan/Bachelorarbeit/PC/main.cpp > CMakeFiles/PC.dir/main.cpp.i
 
 CMakeFiles/PC.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PC.dir/main.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/stephan/Bachelorarbeit/PC/main.cpp -o CMakeFiles/PC.dir/main.cpp.s
+	g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/stephan/Bachelorarbeit/PC/main.cpp -o CMakeFiles/PC.dir/main.cpp.s
 
 CMakeFiles/PC.dir/main.cpp.o.requires:
 
@@ -179,16 +83,16 @@ CMakeFiles/PC.dir/main.cpp.o.provides.build: CMakeFiles/PC.dir/main.cpp.o
 
 CMakeFiles/PC.dir/Robot.cpp.o: CMakeFiles/PC.dir/flags.make
 CMakeFiles/PC.dir/Robot.cpp.o: ../Robot.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/PC.dir/Robot.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PC.dir/Robot.cpp.o -c /home/stephan/Bachelorarbeit/PC/Robot.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/PC.dir/Robot.cpp.o"
+	g++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/PC.dir/Robot.cpp.o -c /home/stephan/Bachelorarbeit/PC/Robot.cpp
 
 CMakeFiles/PC.dir/Robot.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/PC.dir/Robot.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Robot.cpp > CMakeFiles/PC.dir/Robot.cpp.i
+	g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/stephan/Bachelorarbeit/PC/Robot.cpp > CMakeFiles/PC.dir/Robot.cpp.i
 
 CMakeFiles/PC.dir/Robot.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/PC.dir/Robot.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Robot.cpp -o CMakeFiles/PC.dir/Robot.cpp.s
+	g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/stephan/Bachelorarbeit/PC/Robot.cpp -o CMakeFiles/PC.dir/Robot.cpp.s
 
 CMakeFiles/PC.dir/Robot.cpp.o.requires:
 
@@ -203,25 +107,18 @@ CMakeFiles/PC.dir/Robot.cpp.o.provides.build: CMakeFiles/PC.dir/Robot.cpp.o
 
 # Object files for target PC
 PC_OBJECTS = \
-"CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o" \
-"CMakeFiles/PC.dir/Netzwerk/main.c.o" \
-"CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o" \
-"CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o" \
 "CMakeFiles/PC.dir/main.cpp.o" \
 "CMakeFiles/PC.dir/Robot.cpp.o"
 
 # External object files for target PC
 PC_EXTERNAL_OBJECTS =
 
-PC: CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o
-PC: CMakeFiles/PC.dir/Netzwerk/main.c.o
-PC: CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o
-PC: CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o
 PC: CMakeFiles/PC.dir/main.cpp.o
 PC: CMakeFiles/PC.dir/Robot.cpp.o
 PC: CMakeFiles/PC.dir/build.make
+PC: Netzwerk/libNetzwerk.a
 PC: CMakeFiles/PC.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable PC"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable PC"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/PC.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -229,10 +126,6 @@ CMakeFiles/PC.dir/build: PC
 
 .PHONY : CMakeFiles/PC.dir/build
 
-CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/Netzwerk/Funktion_zum_Umwandeln.c.o.requires
-CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/Netzwerk/main.c.o.requires
-CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/Netzwerk/Netzwerk.c.o.requires
-CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/Netzwerk/ProzessPi.c.o.requires
 CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/main.cpp.o.requires
 CMakeFiles/PC.dir/requires: CMakeFiles/PC.dir/Robot.cpp.o.requires
 

@@ -166,8 +166,10 @@ extern "C"{
 #endif
 
 //Allgemein
+#ifdef PROZESSPI_LIB
 extern void sig_handler(int signo);
 extern int fd_set_blocking(int fd, int blocking);
+#endif
 extern void TerminalOszi(int);
 
 

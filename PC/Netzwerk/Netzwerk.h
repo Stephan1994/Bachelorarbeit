@@ -49,4 +49,8 @@ int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfI
 void ReadAndWrite(int fd,char *BufferIn,char *BufferOut,FILE *VonP, FILE *ZuP);
 void *TCPtoP(void *);
 void *PtoTCP(void *);
+#ifdef NETZWERK_LIB
 int fd_set_blocking(int fd, int blocking);
+void sig_handler(int signo);
+int main(int argc,char* argv[]);
+#endif

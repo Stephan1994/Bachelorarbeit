@@ -1,6 +1,8 @@
 #include <stdint.h>
 #include <unistd.h>
+#define PROZESSPI_LIB
 #include "ProzessPi.h"
+
 
 uint64_t Delay_SPI=0;
 uint64_t Delay_I2C=0;

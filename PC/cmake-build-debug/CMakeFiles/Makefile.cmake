@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "../CMakeLists.txt"
+  "../Netzwerk/CMakeLists.txt"
   "CMakeFiles/3.7.2/CMakeCCompiler.cmake"
   "CMakeFiles/3.7.2/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.7.2/CMakeSystem.cmake"
@@ -18,11 +19,18 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeFindCodeBlocks.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeGenericSystem.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeLanguageInformation.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeParseArguments.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeSystemSpecificInformation.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CMakeSystemSpecificInitialize.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CheckIncludeFile.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CheckLibraryExists.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/CheckSymbolExists.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Compiler/GNU-C.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Compiler/GNU-CXX.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Compiler/GNU.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/FindPackageHandleStandardArgs.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/FindPackageMessage.cmake"
+  "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/FindThreads.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Platform/Linux-GNU-C.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Platform/Linux-GNU-CXX.cmake"
   "/home/stephan/clion-2017.1.3/bin/cmake/share/cmake-3.7/Modules/Platform/Linux-GNU.cmake"
@@ -40,11 +48,11 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "Netzwerk/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/fake-target-for-clion.dir/DependInfo.cmake"
-  "CMakeFiles/PC_Netzwerk.dir/DependInfo.cmake"
-  "CMakeFiles/PC_ROBOT.dir/DependInfo.cmake"
+  "CMakeFiles/PC.dir/DependInfo.cmake"
+  "Netzwerk/CMakeFiles/Netzwerk.dir/DependInfo.cmake"
   )

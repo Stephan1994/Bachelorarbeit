@@ -1,0 +1,5 @@
+#SET(GCC_COVERAGE_LINK_FLAGS  "-lpthread")
+#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
+find_package (Threads)
+add_library(Netzwerk ProzessPi.c ProzessPi.h Funktion_zum_Umwandeln.c)
+target_link_libraries (Netzwerk ${CMAKE_THREAD_LIBS_INIT})
