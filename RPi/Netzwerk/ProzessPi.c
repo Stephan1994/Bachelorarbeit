@@ -138,9 +138,19 @@ int init(char *IP,char *PORT){
 	
 	case 0:
 			
+            			printf("Get current working directory..\n");
             getcwd(wd,sizeof(wd));   
+			if ( access("Netzwerk.out", F_OK) != -1)
+			{
+				printf("Netzwerk.out is in current working directory!\n");
+				strcat(wd,"/Netzwerk.out");
+			}
+			else
+			{
+				printf("Netzwerk.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
+				strcat(wd,"/Netzwerk/Netzwerk.out");
+			}  
 
-            strcat(wd,"/Netzwerk.out");
           //  sprintf(wd,"/home/theo/Schreibtisch/MasterArbeit/Programmierung/Laptop/ProzessStation");
             printf("Das Verzeichnis ist -->%s<--",wd);
 

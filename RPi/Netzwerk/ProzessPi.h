@@ -5,7 +5,7 @@
  * gcc testmain.c -lbcm2835 -pthread
  * 
  * */
-#ifdef __arm__
+#if defined(__arm__) || defined(TESTPI)
 #include <bcm2835.h>
 int fd[2]; // Pipe für ADC Thread & Speicher-Thread
 int PipeStattFile[2]; // Pipe für Senden ohne Datei zu erzeugen

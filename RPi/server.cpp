@@ -1,8 +1,6 @@
 #include <iostream>
-extern "C"
-{
-	#include "ProzessPi.h"
-}
+#include "Netzwerk/ProzessPi.h"
+
 using std::cout;
 using std::endl;
 

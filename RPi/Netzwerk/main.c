@@ -1,3 +1,4 @@
+#define TESTPI
 #include "ProzessPi.h"
 #include <pthread.h>
 #include <stdlib.h>
