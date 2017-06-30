@@ -475,7 +475,7 @@ int EmpfangeRobotKommando(char* value)
 	if (strcmp(Kommando,"Robot"))
 	{
 		char buffer[10000]; //seems to be size of pipe
-		i = 0;
+		i = 0;	
 		while((buffer[i++]=fgetc(fd_empfangen)) != ';');
 		buffer[i]='\0';
 		strncpy(value, buffer, sizeof(buffer));
