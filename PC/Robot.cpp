@@ -55,16 +55,32 @@ void Robot::connect(string ip, int port)
 	}
 }
 
+void Robot::closeConnection()
+{
+    char message[ML];
+    if (createMessage(message, "disconnect", "IP"))
+    {
+        SendeKommando(RobotMessage, message);
+    }
+    else
+    {
+        sendSplittedMessage(message, "disconnect", "IP");
+    }
+    done();
+}
+
 bool Robot::createMessage(char* out, string command, string value)
 {
-	string message = "start_question_" + command + ":" + value + ":" + "end_question_" + command;
+	string message = "start_request_" + command + ":" + value + ":" + "end_request_" + command;
 	if (message.length() >= ML)
 	{
 		return false;
 	}	
 
 	strncpy(out, message.c_str(), message.length());
-    //out[message.length() - 1] = 0;
+	cout << out << endl;
+    	out[message.length()] = 0;
+	cout << out << endl;
 	return true;
 }
 

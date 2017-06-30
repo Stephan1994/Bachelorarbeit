@@ -10,5 +10,6 @@ int main() {
     cout << "connected" << endl;
 	rob.forward(100);
 	cout << "forwarded" << endl;
+    rob.closeConnection();
     return 0;
 }

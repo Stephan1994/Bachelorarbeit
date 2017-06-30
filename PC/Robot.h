@@ -19,6 +19,7 @@ public:
  //   virtual void reset();
     //connect this PC with the Robot who has ip
 	virtual void connect(string ip, int port = 5001);
+	virtual void closeConnection();
 
     //motor
     virtual void forward(int speed);
