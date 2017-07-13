@@ -164,7 +164,7 @@ int init(char *IP,char *PORT){
 	
 	break;	  
 	default: 
-			printf("	Testprogramm gestartet \n");
+			//printf("	Testprogramm gestartet \n");
             if((fd_senden = fopen("/tmp/PtoTCP","w"))==0)
 			{
 				printf("Testprogramm meldet für PtoSTCP fopen: ");
@@ -172,30 +172,30 @@ int init(char *IP,char *PORT){
 				printf("\n");
 			}
 
-			printf("senden geöffnet\n");
+			//printf("senden geöffnet\n");
 			
-			fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
-			fflush(fd_senden);
+			//fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
+			//fflush(fd_senden);
             //kill(bib_pid,SIGUSR1);
-			printf("Pfeifentest gesendet.\n");
+			//printf("Pfeifentest gesendet.\n");
             if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
 			{
 				printf("Testprogramm meldet für TCPStoP fopen: ");
 				perror(NULL);
 				printf("\n");
 			}
-			printf("Pfeifentest empfangen\n");
+			//printf("Pfeifentest empfangen\n");
 			
 		
 			
 	}
-	printf("	Hier ist der Anfang vom Ende \n");
+	//printf("	Hier ist der Anfang vom Ende \n");
 	
-	fgets(Tempbuf,14,fd_empfangen);
+	//fgets(Tempbuf,14,fd_empfangen);
 	
 	//read(fileno(fd_empfangen),Tempbuf,13);
-	printf("		und hier das Ende! \n");
-	printf("\n %s \n",Tempbuf);
+	//printf("		und hier das Ende! \n");
+	//printf("\n %s \n",Tempbuf);
 	
 	
 	
@@ -218,7 +218,7 @@ void done()
 
 int SendeKommando(char *Kommando, char* Wert)
 {
-		if(fprintf(fd_senden,"%s,%s;",Kommando,Wert) == 0)
+		if(fprintf(fd_senden,"%s,%s;\n",Kommando,Wert) == 0)
 		{
 			return 0;
 		}

@@ -53,6 +53,8 @@ void Robot::connect(string ip, int port)
 	{
 		sendSplittedMessage(message, "connect", "IP");
 	}
+
+    EmpfangeRobotKommando();
 }
 
 void Robot::closeConnection()

@@ -44,13 +44,9 @@ int ErrorCounter=0;
 int flag_sigpipe =0;
 pthread_t tid[2];
 
+int ErstelleServer(char *BufferIn,char *BufferOut,int Port,FILE *VonP,FILE *ZuP );
 int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfIP,FILE *VonP,FILE *ZuP);
+void ReadAndWrite(int fd,char *BufferIn,char *BufferOut,FILE *VonP, FILE *ZuP);
 void *TCPtoP(void *);
 void *PtoTCP(void *);
-void extractCommand(char *BufferIn, char *Command);
-void extractValue(char *BufferIn, char *Value);
-#ifdef NETZWERK_LIB
 int fd_set_blocking(int fd, int blocking);
-void sig_handler(int signo);
-int main(int argc,char* argv[]);
-#endif
