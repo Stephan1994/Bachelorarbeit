@@ -176,6 +176,7 @@ extern void TerminalOszi(int);
 // Kommunikation
 extern int SendeKommando(char *Kommando, char* Wert);
 extern int EmpfangeKommando();
+extern int EmpfangeRobotKommando(char *value);
 extern int init(char *IP,char *PORT);
 extern void done();
 extern void *SpeichernDerWerte(); 	// Thread RPi

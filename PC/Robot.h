@@ -13,13 +13,22 @@ using std::string;
 
 class Robot {
 public:
+    struct Message{
+        Message() : transferFailure(false), request(true) {}
+        bool transferFailure;
+        bool request;
+        string command;
+        string value;
+    };
+
     enum SensorMode{ single, continous};
     Robot();
     virtual ~Robot();
  //   virtual void reset();
     //connect this PC with the Robot who has ip
-	virtual void connect(string ip, int port = 5001);
+	virtual bool connect(string ip, int port = 5001);
 	virtual void closeConnection();
+    Message extractHeader(string value);
 
     //motor
     virtual void forward(int speed);

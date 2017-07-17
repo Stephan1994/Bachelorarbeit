@@ -26,7 +26,7 @@ Robot::Robot()
 
 Robot::~Robot(){}
 
-void Robot::connect(string ip, int port)
+bool Robot::connect(string ip, int port)
 {
     //convert ip string to char*
     char ipArray[16];
@@ -54,7 +54,29 @@ void Robot::connect(string ip, int port)
 		sendSplittedMessage(message, "connect", "IP");
 	}
 
-    EmpfangeRobotKommando();
+    char recvdValue[10000];
+    EmpfangeRobotKommando(recvdValue);
+
+    string recvdString(recvdValue);
+    Message mes = extractHeader(recvdString);
+    if (mes.request == false && mes.transferFailure == false){
+        if (mes.command.compare("connect") == 0){
+            if (mes.value.compare("connected") == 0){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            //Todo: behandeln von commands, die nicht zu dieser Funktion gehören
+            return false;
+        }
+    }
+    else{
+        //send repeat request
+        return false;
+    }
 }
 
 void Robot::closeConnection()
@@ -103,6 +125,58 @@ void Robot::forward(int speed)
 	{
 		sendSplittedMessage(message, "connect", "IP");
 	}
+}
+
+//extracts information from package to struct Message and tests for transfer failures
+Message Robot::extractHeader(string value)
+{
+    Message mes;
+    size_t pos = value.find("_");
+    if (value.substr(0,pos).compare("start") == 0)
+    {
+        value = value.substr(pos+1);
+        pos = value.find("_");
+        if (value.substr(0,pos).compare("request") == 0)
+        {
+            mes.request = true;
+        }
+        else if (value.substr(0,pos).compare("answer") == 0)
+        {
+            mes.request = false;
+        }
+        else
+        {
+            mes.transferFailure = true;
+            //sendrepeatrequest()
+            cout << "send repeat request not implemented yet" << endl;
+        }
+
+        value = value.substr(pos+1);
+        pos = value.find(":");
+        mes.command = value.substr(0, pos);
+        value = value.substr(pos+1);
+        pos = value.find(":");
+        mes.value = value.substr(0, pos);
+        value = value.substr(pos+1);
+
+        //test if end is without failure
+        string testStr = "end_";
+        testStr += ((mes.request) ? "request_" : "answer_") + mes.command + ";";
+        if (value.compare(testStr) != 0)
+        {
+            mes.transferFailure = true;
+            //sendrepeatrequest()
+            cout << "send repeat request not implemented yet" << endl;
+        }
+    }
+    else
+    {
+        mes.transferFailure = true;
+        //sendrepeatrequest()
+        cout << "send repeat request not implemented yet" << endl;
+    }
+
+    return mes;
 }
 
 

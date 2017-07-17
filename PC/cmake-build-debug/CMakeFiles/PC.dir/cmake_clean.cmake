@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/PC.dir/main.cpp.o"
   "CMakeFiles/PC.dir/Robot.cpp.o"
+  "CMakeFiles/PC.dir/MessageListener.cpp.o"
   "PC.pdb"
   "PC"
 )

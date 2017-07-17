@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <unistd.h>
-#define PROZESSPI_LIB
 #include "ProzessPi.h"
-
 
 uint64_t Delay_SPI=0;
 uint64_t Delay_I2C=0;
@@ -141,7 +137,8 @@ int init(char *IP,char *PORT){
 			printf("\n \n Error beim Erstellen des Prozesses! \n \n"); return 0;
 	
 	case 0:
-			printf("Get current working directory..\n");
+			
+            			printf("Get current working directory..\n");
             getcwd(wd,sizeof(wd));   
 			if ( access("Netzwerk.out", F_OK) != -1)
 			{
@@ -152,7 +149,8 @@ int init(char *IP,char *PORT){
 			{
 				printf("Netzwerk.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
 				strcat(wd,"/Netzwerk/Netzwerk.out");
-			}
+			}  
+
           //  sprintf(wd,"/home/theo/Schreibtisch/MasterArbeit/Programmierung/Laptop/ProzessStation");
             printf("Das Verzeichnis ist -->%s<--",wd);
 
@@ -172,19 +170,18 @@ int init(char *IP,char *PORT){
 				printf("\n");
 			}
 
-			//printf("senden geöffnet\n");
+			
 			
 			//fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
 			//fflush(fd_senden);
             //kill(bib_pid,SIGUSR1);
-			//printf("Pfeifentest gesendet.\n");
+	
             if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
 			{
 				printf("Testprogramm meldet für TCPStoP fopen: ");
 				perror(NULL);
 				printf("\n");
 			}
-			//printf("Pfeifentest empfangen\n");
 			
 		
 			
@@ -468,6 +465,27 @@ void I2C_printListe()
 		printf("FrequenzModus:	%d	\n",Zeiger->FrequenzModus);
 	}
 	
+}
+
+int EmpfangeRobotKommando(char* value)
+{
+	int i = 0;
+	int filePosition = ftell(fd_empfangen);
+	while((Kommando[i++]=fgetc(fd_empfangen)) != ',');
+	if (strcmp(Kommando,"Robot"))
+	{
+		char buffer[10000]; //seems to be size of pipe
+		i = 0;	
+		while((buffer[i++]=fgetc(fd_empfangen)) != ';');
+		buffer[i]='\0';
+		strncpy(value, buffer, sizeof(buffer));
+		return 16;
+	}
+	else
+	{
+		fseek(fd_empfangen, filePosition, SEEK_SET);
+		return EmpfangeKommando();
+	}
 }
 
 int EmpfangeKommando()
