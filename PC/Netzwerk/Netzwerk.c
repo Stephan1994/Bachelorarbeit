@@ -212,8 +212,9 @@ void *TCPtoP(void *TCPtoP_Struct) {
     char Buffer[BUFSIZ];
     int RecvTemp;
     int stop = 0;
+    int len = 0;
 
-    printf("Bufsiz: %d", BUFSIZ);
+    //printf("Bufsiz: %d", BUFSIZ);
     while (stop == 0) {
         // Ist was im Socket zum senden an die Pipe?
         if ((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ - 1, 0)) == -1) {
@@ -238,9 +239,9 @@ void *TCPtoP(void *TCPtoP_Struct) {
             char value[strlen(Buffer)];
             extractValue(Buffer, value);
             len = strlen(value);
-            printf("Value: %s	Length: %d\n", value, len);
-            printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
-            printf("Compare: %d\n", strcmp(value, "disconnected"));
+            //printf("Value: %s	Length: %d\n", value, len);
+            //printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
+            //printf("Compare: %d\n", strcmp(value, "disconnected"));
             if (strcmp(value, "disconnected") == 0)
             {
                 stop = 1;
@@ -294,7 +295,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
     while (stop == 0) {
         usleep(100);
         if (fgets(Buffer, 200, hierhin->VonP) != NULL) {
-            printf("PtoTCP meldet:	%s \n", Buffer);
+            //printf("PtoTCP meldet:	%s \n", Buffer);
             len = strlen(Buffer) - 1;
             if ((len_send = send(hierhin->fd, Buffer, len, 0) != len)) {
                 printf("Error beim Senden! \n");
@@ -303,11 +304,11 @@ void *PtoTCP(void *PtoTCP_Struct) {
             }
             printf("Aus der Pipe geholt und ans Socket gesendet: %s \n", Buffer);
             char command[len];
-            extractValue(Buffer, command);
+            extractCommand(Buffer, command);
             len = strlen(command);
-            printf("Value: %s	Length: %d\n", command, len);
-            printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
-            printf("Compare: %d\n", strcmp(command, "disconnect"));
+            //printf("Value: %s	Length: %d\n", command, len);
+            //printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
+            //printf("Compare: %d\n", strcmp(command, "disconnect"));
             if (strcmp(command, "disconnect") == 0)
             {
                 stop = 1;

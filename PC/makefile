@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -std=c++11
 LDFLAGS = -lpthread
 
-OBJ = main.o Robot.o
+OBJ = main.o Robot.o MessageListener.o
 OBJ_NETWORK = Netzwerk/ProzessPi.o Netzwerk/Funktion_zum_Umwandeln.o
 
 BIN = Robot

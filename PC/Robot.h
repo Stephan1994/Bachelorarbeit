@@ -8,27 +8,19 @@
 using std::string;
 #include <iostream>
 
+#include "MessageListener.h"
 #define PC_ROBOT_H
 
 
 class Robot {
 public:
-    struct Message{
-        Message() : transferFailure(false), request(true) {}
-        bool transferFailure;
-        bool request;
-        string command;
-        string value;
-    };
-
     enum SensorMode{ single, continous};
     Robot();
     virtual ~Robot();
  //   virtual void reset();
     //connect this PC with the Robot who has ip
 	virtual bool connect(string ip, int port = 5001);
-	virtual void closeConnection();
-    Message extractHeader(string value);
+	virtual bool closeConnection();
 
     //motor
     virtual void forward(int speed);
@@ -65,6 +57,7 @@ private:
 	bool createMessage(char* out, string command, string value);
 	void sendSplittedMessage(char* out, string command, string value);
 	char RobotMessage[6];
+    MessageListener listener;
 };
 
 
