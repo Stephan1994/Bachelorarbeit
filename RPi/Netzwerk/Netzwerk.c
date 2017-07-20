@@ -96,7 +96,7 @@ int main(int argc,char* argv[]){
 		if(debug == 1)
 		{
 			printf("Zu wenig Argumente: \n.	/Netzwerk [Server/Client] [IP des Servers] [PORT] [Debug 1 / 0] \n");
-		fprintf(Log,"Zu wenig Argumente: \n.	/Netzwerk [Server/Client] [IP des Servers] [PORT] [Debug 1 / 0] \n");
+			fprintf(Log,"Zu wenig Argumente: \n.	/Netzwerk [Server/Client] [IP des Servers] [PORT] [Debug 1 / 0] \n");
 		}
 		return 0;
 	}
@@ -140,8 +140,17 @@ int main(int argc,char* argv[]){
 			printf("\n");
 		}
 
+		int sock = ErstelleServer(atoi(argv[3]));
+		//printf("sock is %d and closeNetwork is %d\n", sock, closeNetwork);
+		while (closeNetwork == 0)
+		{
+			RunServer(sock, BufferIn, BufferOut, VonP, ZuP);
+			flag_sigpipe = 0;
+		}
 		
-		return ErstelleServer(BufferIn,BufferOut, atoi(argv[3]),VonP,ZuP);	
+		close(sock);    
+		return sock;
+		
 	}
 	
 	if(!strcmp(argv[1],"Client"))
@@ -191,104 +200,108 @@ int main(int argc,char* argv[]){
 	fprintf(Log,"Keine gültigen Argumente eingegeben! ./Netzwerk.out Server/Client IP PORT \n");
 	return 0;
 }
-int ErstelleServer(char *BufferIn,char *BufferOut,int Port,FILE *VonP,FILE *ZuP)
+
+int ErstelleServer(int Port)
 {
-		printf("Erstelle den Server !\n");
-		fprintf(Log,"Erstelle den Server !\n");
-		struct sockaddr_in server, client;
-		int sock;
-		int recv_size;
-		unsigned int len;
-		
-		if((sock = socket( PF_INET, SOCK_STREAM, 0))<0)
-			{
-				
-					printf("Konnte Socket nicht anlegen!\n");
-					fprintf(Log,"Konnte Socket nicht anlegen!\n");
-			}
-		memset( &server,0 , sizeof(server));
-		server.sin_family = AF_INET;
-		server.sin_addr.s_addr = htonl(INADDR_ANY);
-		server.sin_port = htons(Port);
-		
-			int so_reuseaddr = 1;
-			
-			setsockopt(sock,SOL_SOCKET,SO_REUSEADDR,
-						&so_reuseaddr,
-						sizeof(so_reuseaddr));
-						
-		if(bind(sock,(struct sockaddr*)&server, sizeof(server))<0)
-			{
-				
-				printf("Kann mich nicht an das %d Socket binden! \n",sock);
-				fprintf(Log,"Kann mich nicht an das %d Socket binden!  \n %s \n",sock,strerror(errno));
-				perror(NULL);
-				
-				close(sock);
-				return 0;
-			 }
-		printf("Server läuft - warte auf eine Verbindung! \n");
-		fprintf(Log,"Server läuft - warte auf eine Verbindung! \n");
-		
-		listen(sock,1);
-		len = sizeof(client);
-        int fd = accept(sock,(struct sockaddr*)&client, &len);
-		
-        if (fd < 0)
-        {
-			printf("Fehler bei accept \n");
-			fprintf(Log,"Fehler bei accept \n");
-		}
-		printf("Bearbeite den Client mit der Adresse: %s\n",
-           inet_ntoa(client.sin_addr));
-        fprintf(Log,"Bearbeite den Client mit der Adresse: %s\n",inet_ntoa(client.sin_addr));
-          
-     		
-     /*		if( fcntl(fd, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK) < 0)
-			{
-				printf("Da hat was mit nonblockin nicht funktioniert\n");
-				perror(NULL);
-			}
-	*/
-		printf("Lege los!\n");
-		fprintf(Log,"Lege los!\n");
-		
-		kill(PapaPID,SIGUSR2);
-		
-		int err;
-		struct ThreadUebergabe TCPtoP_Struct;
-		struct ThreadUebergabe PtoTCP_Struct;
-		
-		TCPtoP_Struct.fd = fd;
-		TCPtoP_Struct.VonP = VonP;
-		TCPtoP_Struct.ZuP = ZuP;
-		PtoTCP_Struct.fd = fd;
-		PtoTCP_Struct.VonP = VonP;
-		PtoTCP_Struct.ZuP = ZuP;
-		
-		
-		if((err = pthread_create(&(tid[0]),NULL, &TCPtoP,&TCPtoP_Struct) != 0))
-		{
-				printf("Error beim Erstellen des Threads TCP to P !\n Hat keinen Sinn mehr.");
-				fprintf(Log,"Error beim Erstellen des Threads TCP to P !\n Hat keinen Sinn mehr.");
-				exit(1);
-		}
-		
-		if((err = pthread_create(&(tid[1]),NULL, &PtoTCP,&PtoTCP_Struct) != 0))
-		{
-				printf("Error beim Erstellen des Threads P to TCP !\n Hat keinen Sinn mehr.");
-				fprintf(Log,"Error beim Erstellen des Threads P to TCP !\n Hat keinen Sinn mehr.");
-				exit(1);
-		}
+	printf("Erstelle den Server !\n");
+	fprintf(Log,"Erstelle den Server !\n");
+	struct sockaddr_in server;
+	int sock;
 	
+	//erstelle socket
+	if((sock = socket( PF_INET, SOCK_STREAM, 0))<0)
+	{
+		printf("Konnte Socket nicht anlegen!\n");
+		fprintf(Log,"Konnte Socket nicht anlegen!\n");
+	}
+	//speichere Serverdaten
+	memset(&server, 0, sizeof(server));
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = htonl(INADDR_ANY);
+	server.sin_port = htons(Port);
+	
+	int so_reuseaddr = 1;
+
+	setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &so_reuseaddr, sizeof(so_reuseaddr));
+	
+	//weise dem socket den Server zu
+	if(bind(sock,(struct sockaddr*)&server, sizeof(server))<0)
+	{
+		printf("Kann mich nicht an das %d Socket binden! \n",sock);
+		fprintf(Log,"Kann mich nicht an das %d Socket binden!  \n %s \n",sock,strerror(errno));
+		perror(NULL);
+				
+		close(sock);
+		return 0;
+	}
+	printf("Server läuft! \n");
+	fprintf(Log,"Server läuft! \n");
+		
+	return sock;
+}
+
+int RunServer(int sock, char *BufferIn,char *BufferOut,FILE *VonP,FILE *ZuP)
+{
+	//warten auf eingehende Verbindungen
+	printf("Warte auf eine Verbindung! \n");
+	fprintf(Log,"Warte auf eine Verbindung! \n");
+	listen(sock,1);
+	
+	struct sockaddr_in client;
+	unsigned int len;
+	len = sizeof(client);
+	
+	//speichern des Clients
+    int fd = accept(sock,(struct sockaddr*)&client, &len);
+    if (fd < 0)
+    {
+		printf("Fehler bei accept \n");
+		fprintf(Log,"Fehler bei accept \n");
+	}
+		
+	printf("Bearbeite den Client mit der Adresse: %s\n", inet_ntoa(client.sin_addr));
+    fprintf(Log,"Bearbeite den Client mit der Adresse: %s\n", inet_ntoa(client.sin_addr));
+		
+	printf("Lege los!\n");
+	fprintf(Log,"Lege los!\n");
+		
+	int err;
+	struct ThreadUebergabe TCPtoP_Struct;
+	struct ThreadUebergabe PtoTCP_Struct;
+	
+	TCPtoP_Struct.fd = fd;
+	TCPtoP_Struct.VonP = VonP;
+	TCPtoP_Struct.ZuP = ZuP;
+	PtoTCP_Struct.fd = fd;
+	PtoTCP_Struct.VonP = VonP;
+	PtoTCP_Struct.ZuP = ZuP;
+		
+	//Thread für TCP to Pipe erstellen
+	if((err = pthread_create(&(tid[0]),NULL, &TCPtoP,&TCPtoP_Struct) != 0))
+	{
+		printf("Error beim Erstellen des Threads TCP to P !\n Hat keinen Sinn mehr.");
+		fprintf(Log,"Error beim Erstellen des Threads TCP to P !\n Hat keinen Sinn mehr.");
+		exit(1);
+	}
+	
+	//Thread für Pipe to TCP erstellen
+	if((err = pthread_create(&(tid[1]),NULL, &PtoTCP,&PtoTCP_Struct) != 0))
+	{
+		printf("Error beim Erstellen des Threads P to TCP !\n Hat keinen Sinn mehr.");
+		fprintf(Log,"Error beim Erstellen des Threads P to TCP !\n Hat keinen Sinn mehr.");
+		exit(1);
+	}
+	
+	//warte auf Pipe to TCP Thread
 	pthread_join( tid[1],NULL);
 	printf("Netzwerk.out meldet tid[1] ist fertig! \n");
 	fprintf(Log,"Netzwerk.out meldet tid[1] ist fertig! \n");
+	
+	//warte auf TCP to Pipe Thread
 	pthread_join( tid[0],NULL);
 	printf("Netzwerk.out meldet tid[2] ist fertig! \n");
 	fprintf(Log,"Netzwerk.out meldet tid[2] ist fertig! \n");
 	
-	close(sock);
 	return sock;
 }
 
@@ -386,7 +399,7 @@ while(flag_sigpipe == 0)
 		
 		Buffer[RecvTemp] = '\0';
 		
-		//					printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
+		printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
 		
 		if((tmp = fprintf(hierhin->ZuP,"%s",Buffer))<0)	//write(fileno(ZuP),BufferOut,10))== 0)
 		{
@@ -440,22 +453,54 @@ void *PtoTCP(void *PtoTCP_Struct)
 	int testcounter;
 	testcounter = 0;
 	
+	struct timeval tv = {1, 0};
+	fd_set set;
+	FD_ZERO(&set);
+	int filedesc = fileno(hierhin->VonP);
+	FD_SET(filedesc,&set);
+	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//fd_set_blocking(fileno(hierhin->VonP),1);
 	while(flag_sigpipe == 0)
 	{	
+		printf("ptoTcp while gestartet\n");
 		usleep(100);
-		if(fgets(Buffer,200,hierhin->VonP) !=NULL)
+		fd_set setSelected = set;
+
+		//printf("vor select\n");
+		//int ret = select(FD_SETSIZE, &setSelected, NULL, NULL, &tv);
+		//if ((ret == -1))
+		//{
+		//	printf("fail in ptotcp\n");
+		//}
+		//sleep(10);
+		//printf("ISSET: %d\n", FD_ISSET(filedesc, &setSelected));
+		if(fgets(Buffer,BUFSIZ,hierhin->VonP) != NULL)
+		//if(FD_ISSET(filedesc, &setSelected))
 		{
-		//	printf("PtoTCP meldet:	%s \n",Buffer);
-			len = strlen(Buffer);
+		//	printf("in isset\n");
+		//	sleep(10);
+		//	printf("jetzt gehts weiter\n");
+		//	fgets(Buffer,200,hierhin->VonP);
+			printf("PtoTCP meldet:	%s \n",Buffer);
+			len = strlen(Buffer) - 1;
 			if((len_send = send(hierhin->fd, Buffer, len, 0) != len))
 			{ 	
 				printf("Error beim Senden! \n");
 				fprintf(Log,"Error beim Senden! \n");
 				perror(NULL);				
 			}
-	//	printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
+			printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
+			char value[len];
+			extractValue(Buffer, value);
+			len = strlen(value);
+			printf("Value: %s	Length: %d\n", value, len);
+			printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
+			printf("Compare: %d\n", strcmp(value, "disconnected"));
+			if (strcmp(value, "disconnected") == 0)
+			{
+				flag_sigpipe = 1;
+			}
 		} 
 	}
 	
@@ -464,7 +509,7 @@ void *PtoTCP(void *PtoTCP_Struct)
 
 	// IST NOCH BLOCK
 	int tmpfd;
-	tmpfd = fileno(hierhin->VonP);
+	/*tmpfd = fileno(hierhin->VonP);
 	//fread(Buffer,(BUFSIZ-1),1,hierhin->VonP);
 	read(tmpfd,Buffer,(BUFSIZ-1));
 	
@@ -477,9 +522,35 @@ void *PtoTCP(void *PtoTCP_Struct)
 	}
 		//printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",BufferIn); 
 	
-	
+	*/
 	
 	}
+	
+	void extractValue(char *BufferIn, char *Value)
+	{
+		int i = 0;
+		while (BufferIn[i] != ':' && i< BUFSIZ-2){i++;};
+		int j = i+1;
+		while (BufferIn[j] != ':' && j< BUFSIZ-2){j++;};
+		
+		int k, l = 0;
+		for (k=0, l=i+1; k< BUFSIZ-2, l<j; k++, l++)
+		{
+			Value[k] = BufferIn[l];
+		}
+		Value[k] = '\0';
+		//str_cut(Value, 0, j-i-1);					
+	}
+
+	void str_cut(char *str, int begin, int len)
+	{
+		int l = strlen(str);
+
+		if (len < 0) len = l - begin;
+		if (begin  + len > 1) len = l-begin;
+		memmove(str + begin, str + begin + len, l - len + 1);
+	}
+	
 void ReadAndWrite(int fd,char *BufferIn,char *BufferOut, FILE *VonP, FILE *ZuP)
 {
 	//usleep(10);
@@ -551,14 +622,15 @@ void sig_handler(int signo)
 {
   if(signo == SIGUSR1)
 	{
-		exit(1);
-	
+		//exit(1);
+		closeNetwork = 1;
 	}
 	if(signo == SIGUSR2)
 	{
-		flag_sigpipe = 1;
-		printf("Habe keinen Bock mehr!\n");
-		
+		printf("Client meldet sich ab.\n");
+		fprintf(Log,"Client meldet sich ab. \n");
+		//usleep(100);
+		//flag_sigpipe = 1;
 	}
 	
 	//if(signo == SIGINT)

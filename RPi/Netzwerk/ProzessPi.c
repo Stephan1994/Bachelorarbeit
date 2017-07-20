@@ -1,5 +1,10 @@
 #include "ProzessPi.h"
 
+#if defined(__arm__)
+int fd[2]; // Pipe für ADC Thread & Speicher-Thread
+int PipeStattFile[2];
+#endif
+
 uint64_t Delay_SPI=0;
 uint64_t Delay_I2C=0;
 
@@ -162,7 +167,7 @@ int init(char *IP,char *PORT){
 	
 	break;	  
 	default: 
-			printf("	Testprogramm gestartet \n");
+			//printf("	Testprogramm gestartet \n");
             if((fd_senden = fopen("/tmp/PtoTCP","w"))==0)
 			{
 				printf("Testprogramm meldet für PtoSTCP fopen: ");
@@ -172,8 +177,8 @@ int init(char *IP,char *PORT){
 
 			
 			
-			fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
-			fflush(fd_senden);
+			//fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
+			//fflush(fd_senden);
             //kill(bib_pid,SIGUSR1);
 	
             if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
@@ -186,13 +191,13 @@ int init(char *IP,char *PORT){
 		
 			
 	}
-	printf("	Hier ist der Anfang vom Ende \n");
+	//printf("	Hier ist der Anfang vom Ende \n");
 	
-	fgets(Tempbuf,14,fd_empfangen);
+	//fgets(Tempbuf,14,fd_empfangen);
 	
 	//read(fileno(fd_empfangen),Tempbuf,13);
-	printf("		und hier das Ende! \n");
-	printf("\n %s \n",Tempbuf);
+	//printf("		und hier das Ende! \n");
+	//printf("\n %s \n",Tempbuf);
 	
 	
 	
@@ -204,7 +209,7 @@ int init(char *IP,char *PORT){
 void done()
 {
 	
-	kill(bib_pid,SIGUSR2);
+	kill(bib_pid,SIGUSR1);
 	unlink("/tmp/TCPtoP");
 	unlink("/tmp/PtoTCP");
 	printf("done()!\n");
@@ -215,7 +220,7 @@ void done()
 
 int SendeKommando(char *Kommando, char* Wert)
 {
-		if(fprintf(fd_senden,"%s,%s;",Kommando,Wert) == 0)
+		if(fprintf(fd_senden,"%s,%s;\n",Kommando,Wert) == 0)
 		{
 			return 0;
 		}

@@ -1,6 +1,10 @@
 #include <iostream>
 #include <iomanip>
+#include "RobotHandler.h"
 #include "Netzwerk/ProzessPi.h"
+
+//MessageLength
+#define ML 1056
 
 using std::cout;
 using std::endl;
@@ -15,7 +19,9 @@ struct Message{
 	string value;
 };
 
-Message analyzeHeader(string value);
+Message extractHeader(string value);
+bool handleRequest(string command, string value);
+bool handleAnswer(string command, string value);
 
 int main() 
 {
@@ -27,19 +33,29 @@ int main()
 		cout << "Value received: " << recvdValue << endl;
 		string recvdString(recvdValue);
 		Message message;
-		message = analyzeHeader(recvdValue);
+		message = extractHeader(recvdValue);
+
 		cout << "Actual Message:" << endl;
 		cout << "\t" << "failure? " << (message.transferFailure ? "Yes" : "No") << endl;
 		cout << "\t" << "request? " << (message.request ? "Yes" : "No") << endl;
 		cout << "\t" << "command: " << message.command << endl;
 		cout << "\t" << "value: " << message.value << endl;
+		
+		if (message.transferFailure == false)
+		{
+			bool messageHandled = false;
+			if (message.request)
+				messageHandled = handleRequest(message.command, message.value);
+			else
+				messageHandled = handleAnswer(message.command, message.value);
+		}
 	}
 	
     return 0;
 }
 
 //extracts information from package to struct Message and tests for transfer failures
-Message analyzeHeader(string value)
+Message extractHeader(string value)
 {	
 	Message mes;
 	size_t pos = value.find("_");
@@ -89,3 +105,27 @@ Message analyzeHeader(string value)
 
 	return mes;
 }
+
+bool handleRequest(string command, string value)
+{
+	RobotHandler handler;
+	if (handler.RobotFunctions.count(command) > 0)
+	{
+		string answerValue = handler.RobotFunctions[command](value);
+		char answer[ML];
+		handler.createMessage(answer, command, answerValue, false);
+		SendeKommando(handler.RobotMessage, answer);
+	}
+	else
+	{
+		cout << "This command is unknown." << endl;
+	}
+	return true;
+}
+
+bool handleAnswer(string command, string value)
+{
+	cout << "handleAnswer not implemented yet" << endl;
+	return true;
+}
+

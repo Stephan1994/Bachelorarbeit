@@ -1,24 +1,27 @@
 #ifndef RPI_RobotHandler_H
+#define RPI_RobotHandler_H
 
 #include <string>
+#include <string.h>
 using std::string;
 #include <iostream>
-
-#define RPI_RobotHandler_H
+#include <map>
+#include <functional>
+#include "Netzwerk/ProzessPi.h"
 
 
 class RobotHandler {
 public:
     enum SensorMode{ single, continous};
+	std::map<string, std::function<string(string)>> RobotFunctions;
     RobotHandler();
     virtual ~RobotHandler();
  //   virtual void reset();
-    //connect this PC with the Robot who has ip
-	virtual void connect(string ip, int port = 5001);
-	virtual void closeConnection();
+	virtual string connect(string value);
+	virtual string closeConnection(string value);
 
     //motor
-    virtual void forward(int speed);
+    virtual string forward(string speed);
 //    virtual void backward(int speed);
 //    virtual void setSingleMotorSpeed(int motor, int speed);
 //    virtual void setCurveSpeed(int leftSpeed, int rightSpeed);
@@ -48,10 +51,10 @@ public:
 //    virtual int getAccelerometer();
 
 	//communication
-private:
-	bool createMessage(char* out, string command, string value);
+	bool createMessage(char* out, string command, string value, bool request = true);
 	void sendSplittedMessage(char* out, string command, string value);
 	char RobotMessage[6];
+	void initFunctions();
 };
 
 

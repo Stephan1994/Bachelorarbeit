@@ -2,7 +2,7 @@ CC = g++
 CFLAGS = -Wall -std=c++11
 LDFLAGS = -lpthread -lbcm2835
 
-OBJ = server.o
+OBJ = server.o RobotHandler.o
 OBJ_NETWORK = Netzwerk/ProzessPi.o Netzwerk/Funktion_zum_Umwandeln.o
 
 BIN = Server
