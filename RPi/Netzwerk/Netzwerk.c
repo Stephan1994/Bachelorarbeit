@@ -526,31 +526,37 @@ void *PtoTCP(void *PtoTCP_Struct)
 	
 	}
 	
-	void extractValue(char *BufferIn, char *Value)
-	{
-		int i = 0;
-		while (BufferIn[i] != ':' && i< BUFSIZ-2){i++;};
-		int j = i+1;
-		while (BufferIn[j] != ':' && j< BUFSIZ-2){j++;};
-		
-		int k, l = 0;
-		for (k=0, l=i+1; k< BUFSIZ-2, l<j; k++, l++)
-		{
-			Value[k] = BufferIn[l];
-		}
-		Value[k] = '\0';
-		//str_cut(Value, 0, j-i-1);					
-	}
+//"header::type:(request/answer),command: commandValue[, parted: yes, partnr: 00, parts: 00]::header"
+void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType)
+{
+    int i = 0;
+    int startHeader = (int)(strstr(BufferIn, "header::") - BufferIn + 8);
+    int endHeader = (int)(strstr(BufferIn, "::header") - BufferIn);
+    char fullHeaderFieldType[strlen(HeaderFieldType) + 2];
+    strcpy(fullHeaderFieldType, HeaderFieldType);
+    strcat(fullHeaderFieldType, ": ");
+    char headerField[40];
+    while(startHeader < endHeader){
+        i = startHeader;
+        while (BufferIn[i] != ',' && i < endHeader){i++;};
+        memset(&headerField[0], 0, sizeof(headerField));
+        strncat(headerField, BufferIn + startHeader,(size_t) (i - startHeader));
+        if (strstr(headerField, fullHeaderFieldType) != NULL){
+            strncat(Command, headerField + strlen(fullHeaderFieldType) , (size_t)(i - startHeader - strlen(fullHeaderFieldType)));
+            return;
+        }
+        startHeader = i+1;
+    }
+}
 
-	void str_cut(char *str, int begin, int len)
-	{
-		int l = strlen(str);
+void extractValue(char *BufferIn, char *Value)
+{
+    int startValue = (int)(strstr(BufferIn, "message::") - BufferIn + 9);
+    int endValue = (int)(strstr(BufferIn, "::message") - BufferIn);
 
-		if (len < 0) len = l - begin;
-		if (begin  + len > 1) len = l-begin;
-		memmove(str + begin, str + begin + len, l - len + 1);
-	}
-	
+    strncat(Value, BufferIn + startValue, (size_t)(endValue - startValue));
+}
+
 void ReadAndWrite(int fd,char *BufferIn,char *BufferOut, FILE *VonP, FILE *ZuP)
 {
 	//usleep(10);

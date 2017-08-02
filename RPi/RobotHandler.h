@@ -37,8 +37,8 @@ public:
 //    virtual void setLED(int led, bool state);
 
     //camera
-//    virtual int getPicture(int camera = 0);
-//    virtual int getVideo(int camera = 0);
+    virtual string getPicture(string camera = "0");
+    virtual string getVideo(string camera = 0);
 
     //audio
 //    virtual void playSound(string filePath);
@@ -52,7 +52,8 @@ public:
 
 	//communication
 	bool createMessage(char* out, string command, string value, bool request = true);
-	void sendSplittedMessage(char* out, string command, string value);
+	string createHeader(bool request, string command, bool parted = false, int parts = 0, int partnr = 0);
+	int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);
 	char RobotMessage[6];
 	void initFunctions();
 };
