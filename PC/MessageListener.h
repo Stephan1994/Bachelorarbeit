@@ -8,32 +8,32 @@
 using std::thread;
 #include <string>
 using std::string;
-#include "Netzwerk/ProzessPi.h"
-#include <iostream>
 #include <future>
 using std::future;
 using std::promise;
 #include <list>
 using std::list;
 
-using std::cout;
-using std::endl;
+#include "ProtocolLibrary.h"
 
 class MessageListener {
 private:
-    struct Message{
-        Message() : transferFailure(false), request(true) {}
-        bool transferFailure;
-        bool request;
+   /* struct Message{
+        bool transferFailure{false};
+        bool request{true};
         string command;
         string value;
-    };
+        bool parted;
+        int parts;
+        int part;
+    };*/
 
     struct Listener{
         promise<string> prom;
         string requestedCommand;
 
-        Listener() {}
+        Listener() = default;
+
         Listener(const Listener&) = delete;
 
         Listener(Listener&& source)
@@ -42,13 +42,14 @@ private:
         {}
     };
 
-    list<Message> incoming;
+    list<ProtocolLibrary::Message> incoming;
     list<Listener> listeners;
+    list<ProtocolLibrary::Message> partedNotFinished;
     thread listeningThread;
     bool stop = false;
 
     void listening();
-    Message extractHeader(string value);
+    //Message extractHeader(string value);
 
 public:
     future<string> addListener(string command);

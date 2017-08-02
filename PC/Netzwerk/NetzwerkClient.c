@@ -53,7 +53,7 @@
 
 #define NETZWERK_LIB
 
-#include "Netzwerk.h"
+#include "NetzwerkClient.h"
 
 void sig_handler(int signo);
 
@@ -214,7 +214,6 @@ void *TCPtoP(void *TCPtoP_Struct) {
     int stop = 0;
     int len = 0;
 
-    //printf("Bufsiz: %d", BUFSIZ);
     while (stop == 0) {
         // Ist was im Socket zum senden an die Pipe?
         if ((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ - 1, 0)) == -1) {
@@ -239,7 +238,7 @@ void *TCPtoP(void *TCPtoP_Struct) {
             char value[strlen(Buffer)];
             extractValue(Buffer, value);
             len = strlen(value);
-            //printf("Value: %s	Length: %d\n", value, len);
+            printf("Value: %s	Length: %d\n", value, len);
             //printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
             //printf("Compare: %d\n", strcmp(value, "disconnected"));
             if (strcmp(value, "disconnected") == 0)
@@ -281,7 +280,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
     // typecast
     struct ThreadUebergabe *hierhin;
     hierhin = (struct ThreadUebergabe *) PtoTCP_Struct;
-    char Buffer[201];
+    char Buffer[BUFSIZ];
     int len, len_send;
     //Ist was in der Pipe zum Senden ans Socket?
 
@@ -294,7 +293,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
     //fd_set_blocking(fileno(hierhin->VonP),1);
     while (stop == 0) {
         usleep(100);
-        if (fgets(Buffer, 200, hierhin->VonP) != NULL) {
+        if (fgets(Buffer, BUFSIZ-1, hierhin->VonP) != NULL) {
             //printf("PtoTCP meldet:	%s \n", Buffer);
             len = strlen(Buffer) - 1;
             if ((len_send = send(hierhin->fd, Buffer, len, 0) != len)) {
@@ -304,9 +303,9 @@ void *PtoTCP(void *PtoTCP_Struct) {
             }
             printf("Aus der Pipe geholt und ans Socket gesendet: %s \n", Buffer);
             char command[len];
-            extractCommand(Buffer, command);
+            extractHeaderFieldValue(Buffer, command, "command");
             len = strlen(command);
-            //printf("Value: %s	Length: %d\n", command, len);
+            printf("Value: %s	Length: %d\n", command, len);
             //printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
             //printf("Compare: %d\n", strcmp(command, "disconnect"));
             if (strcmp(command, "disconnect") == 0)
@@ -335,37 +334,35 @@ void *PtoTCP(void *PtoTCP_Struct) {
     */
 }
 
-void extractCommand(char *BufferIn, char *Command)
+//"header::type:(request/answer),command: commandValue[, parted: yes, partnr: 00, parts: 00]::header"
+void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType)
 {
     int i = 0;
-    while (BufferIn[i] != '_' && i< 200){i++;};
-    i++;
-    while (BufferIn[i] != '_' && i< 200){i++;};
-    int j = i+1;
-    while (BufferIn[j] != ':' && j< 200){j++;};
-
-    int k, l = 0;
-    for (k=0, l=i+1; k< 200, l<j; k++, l++)
-    {
-        Command[k] = BufferIn[l];
+    int startHeader = (int)(strstr(BufferIn, "header::") - BufferIn + 8);
+    int endHeader = (int)(strstr(BufferIn, "::header") - BufferIn);
+    char fullHeaderFieldType[strlen(HeaderFieldType) + 2];
+    strcpy(fullHeaderFieldType, HeaderFieldType);
+    strcat(fullHeaderFieldType, ": ");
+    char headerField[40];
+    while(startHeader < endHeader){
+        i = startHeader;
+        while (BufferIn[i] != ',' && i < endHeader){i++;};
+        memset(&headerField[0], 0, sizeof(headerField));
+        strncat(headerField, BufferIn + startHeader,(size_t) (i - startHeader));
+        if (strstr(headerField, fullHeaderFieldType) != NULL){
+            strncat(Command, headerField + strlen(fullHeaderFieldType) , (size_t)(i - startHeader - strlen(fullHeaderFieldType)));
+            return;
+        }
+        startHeader = i+1;
     }
-    Command[k] = '\0';
 }
 
 void extractValue(char *BufferIn, char *Value)
 {
-    int i = 0;
-    while (BufferIn[i] != ':' && i< BUFSIZ-2){i++;};
-    int j = i+1;
-    while (BufferIn[j] != ':' && j< BUFSIZ-2){j++;};
+    int startValue = (int)(strstr(BufferIn, "message::") - BufferIn + 9);
+    int endValue = (int)(strstr(BufferIn, "::message") - BufferIn);
 
-    int k, l = 0;
-    for (k=0, l=i+1; k< BUFSIZ-2, l<j; k++, l++)
-    {
-        Value[k] = BufferIn[l];
-    }
-    Value[k] = '\0';
-    //str_cut(Value, 0, j-i-1);
+    strncat(Value, BufferIn + startValue, (size_t)(endValue - startValue));
 }
 
 void sig_handler(int signo) {

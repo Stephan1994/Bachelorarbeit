@@ -6,7 +6,6 @@
 
 #include <string>
 using std::string;
-#include <iostream>
 
 #include "MessageListener.h"
 #define PC_ROBOT_H
@@ -19,7 +18,7 @@ public:
     virtual ~Robot();
  //   virtual void reset();
     //connect this PC with the Robot who has ip
-	virtual bool connect(string ip, int port = 5001);
+	virtual bool connect(string ip);
 	virtual bool closeConnection();
 
     //motor
@@ -54,8 +53,9 @@ public:
 
 	//communication
 private:
-	bool createMessage(char* out, string command, string value);
-	void sendSplittedMessage(char* out, string command, string value);
+	/*bool createMessage(char* out, string command, string value, bool request = true);
+    string createHeader(bool request, string command, bool parted = false, int parts = 0, int partnr = 0);
+    int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);*/
 	char RobotMessage[6];
     MessageListener listener;
 };

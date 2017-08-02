@@ -1,4 +1,4 @@
-#include "ProzessPi.h"
+#include "ProzessPiClient.h"
 
 uint64_t Delay_SPI=0;
 uint64_t Delay_I2C=0;
@@ -194,16 +194,12 @@ int init(char *IP,char *PORT){
 	//printf("		und hier das Ende! \n");
 	//printf("\n %s \n",Tempbuf);
 	
-	
-	
-			fd_set_blocking(fileno(fd_senden),0);
-			
+    fd_set_blocking(fileno(fd_senden),0);
 			
 	return 1;
 }
 void done()
 {
-	
 	kill(bib_pid,SIGUSR2);
 	unlink("/tmp/TCPtoP");
 	unlink("/tmp/PtoTCP");

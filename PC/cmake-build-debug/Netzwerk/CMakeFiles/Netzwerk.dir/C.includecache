@@ -1,4 +1,4 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
 
 #IncludeRegexScan: ^.*$
 
@@ -9,14 +9,58 @@
 /home/stephan/Bachelorarbeit/PC/Netzwerk/Funktion_zum_Umwandeln.c
 stdint.h
 -
-ProzessPi.h
-/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.h
+ProzessPiClient.h
+/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPiClient.h
 
-/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.c
-ProzessPi.h
-/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.h
+/home/stephan/Bachelorarbeit/PC/Netzwerk/NetzwerkClient.c
+string.h
+-
+errno.h
+-
+signal.h
+-
+sys/ipc.h
+-
+sys/select.h
+-
+fcntl.h
+-
+NetzwerkClient.h
+/home/stephan/Bachelorarbeit/PC/Netzwerk/NetzwerkClient.h
 
-/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPi.h
+/home/stephan/Bachelorarbeit/PC/Netzwerk/NetzwerkClient.h
+stdio.h
+-
+sys/types.h
+-
+sys/socket.h
+-
+netinet/in.h
+-
+netdb.h
+-
+arpa/inet.h
+-
+string.h
+-
+unistd.h
+-
+sys/ipc.h
+-
+sys/msg.h
+-
+stdlib.h
+-
+errno.h
+-
+pthread.h
+-
+
+/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPiClient.c
+ProzessPiClient.h
+/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPiClient.h
+
+/home/stephan/Bachelorarbeit/PC/Netzwerk/ProzessPiClient.h
 bcm2835.h
 -
 stdio.h

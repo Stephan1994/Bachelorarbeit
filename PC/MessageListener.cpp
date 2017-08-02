@@ -9,10 +9,16 @@
 
 #include "MessageListener.h"
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
+#include "Netzwerk/ProzessPiClient.h"
+
 //loops to get a new message every time there's one available
 void MessageListener::listening() {
-    fd_set receiveSet;
-    struct timeval timer;
+    fd_set receiveSet{};
+    struct timeval timer{};
     //start loop, stop gets set by function "stopListening"
     while(!stop){
         //init the receiveSet
@@ -24,34 +30,70 @@ void MessageListener::listening() {
         timer = {2,0};
 
         //waits until something is available in fd_empfangen or until timer runs out
-        int ret = select(FD_SETSIZE, &receiveSet, NULL, NULL, &timer);
+        int ret = select(FD_SETSIZE, &receiveSet, nullptr, nullptr, &timer);
 
         //if something is available it gets read and added to the incoming queue
+        //if the message is splitted the function collects all parts and then add it to incoming queue
         if(FD_ISSET(fdEmpfangen, &receiveSet) && ret != -1 && !stop){
             char recvdValue[10000];
             //get new message
             EmpfangeRobotKommando(recvdValue);
             //convert it to string
             string recvdString(recvdValue);
-            MessageListener::Message mes = extractHeader(recvdString);
+            ProtocolLibrary::Message mes = ProtocolLibrary::extractHeader(recvdString);
+
+            //test if catched message is a splitted
+            if (mes.parted && !mes.transferFailure){
+                //add to buffer if nothing exists there until now
+                if (partedNotFinished.empty()){
+                    partedNotFinished.push_back(mes);
+                }
+                else{
+                    //go through the splitted messages that been catched
+                    auto parted_it = partedNotFinished.begin();
+                    bool inserted = false;
+                    while (parted_it != partedNotFinished.end()){
+                        if ((*parted_it).command == mes.command){
+                            //add value und change actual part number to the message that fits
+                            if((*parted_it).parts == mes.parts && (*parted_it).part == mes.part - 1){
+                                (*parted_it).part = mes.part;
+                                (*parted_it).value += mes.value;
+                                //if all parts were added, the message is added to incoming queue
+                                if ((*parted_it).part == (*parted_it).parts){
+                                    incoming.push_back(*parted_it);
+                                    partedNotFinished.erase(parted_it);
+                                }
+                                inserted = true;
+                                break;
+                            }
+                        }
+                        ++parted_it;
+                    }
+                    //if no message fits to the incoming one it gets added at the end of the queue
+                    if (!inserted){
+                        partedNotFinished.push_back(mes);
+                    }
+                }
+            }
             //add the new message to incoming queue
-            if (!mes.transferFailure)
+            else if (!mes.transferFailure)
                 incoming.push_back(mes);
         }
 
         //if someone is listening, the incoming queue gets searched for the command the listener waits for
         // and the promise is set if found
         if (!listeners.empty() && !incoming.empty()){
-            list<MessageListener::Listener>::iterator listener_it = listeners.begin();
+            auto listener_it = listeners.begin();
             //go through all listeners
             while (listener_it != listeners.end()){
-                list<MessageListener::Message>::iterator message_it = incoming.begin();
+                auto message_it = incoming.begin();
 
                 //search for command in all queued messages
-                while((*message_it).command.compare((*listener_it).requestedCommand) != 0 && message_it != incoming.end()){
+                while((*message_it).command != (*listener_it).requestedCommand && message_it != incoming.end()){
                     ++message_it;
                 }
-                //if command is found, set promise and erase message and listener from lists
+                //if command is found, set promise and erase message and listener from lists if message is not
+                //seperated
                 if(message_it != incoming.end()){
                     (*listener_it).prom.set_value((*message_it).value);
                     incoming.erase(message_it);
@@ -70,66 +112,58 @@ future<string> MessageListener::addListener(string command){
     //init the new Listener with promise and given command
     MessageListener::Listener newListener;
     newListener.prom = promise<string>();
-    newListener.requestedCommand = command;
+    newListener.requestedCommand = std::move(command);
 
     //adds the listener to the list
     listeners.push_back(std::move(newListener));
 
     return listeners.back().prom.get_future();
 }
-
+/*
 //extracts information from package to struct Message and tests for transfer failures
 MessageListener::Message MessageListener::extractHeader(string value)
 {
     MessageListener::Message mes;
-    size_t pos = value.find("_");
-    if (value.substr(0,pos).compare("start") == 0)
-    {
-        value = value.substr(pos+1);
-        pos = value.find("_");
-        if (value.substr(0,pos).compare("request") == 0)
-        {
-            mes.request = true;
-        }
-        else if (value.substr(0,pos).compare("answer") == 0)
-        {
-            mes.request = false;
-        }
-        else
-        {
+    size_t pos = value.find("::header");
+    string header = value.substr(value.find("header::")+8, pos);
+
+    string headerField, fieldType, fieldValue;
+    size_t fieldPos;
+    while((pos = header.find(',')) != string::npos) {
+        headerField = header.substr(0, pos);
+        fieldPos = headerField.find(':');
+        fieldType = headerField.substr(0, fieldPos);
+        fieldValue = headerField.substr(fieldPos + 1);
+
+        if (fieldType == "type") {
+            mes.request = (fieldValue == "request");
+        } else if (fieldType == "command") {
+            mes.command = fieldValue;
+        } else if (fieldType == "parted") {
+            mes.parted = (fieldValue == "yes");
+        } else if (fieldType == "parts") {
+            mes.parts = stoi(fieldValue);
+        } else if (fieldType == "part") {
+            mes.part = stoi(fieldValue);
+        } else {
             mes.transferFailure = true;
-            //sendrepeatrequest()
-            cout << "send repeat request not implemented yet" << endl;
+            break;
         }
 
-        value = value.substr(pos+1);
-        pos = value.find(":");
-        mes.command = value.substr(0, pos);
-        value = value.substr(pos+1);
-        pos = value.find(":");
-        mes.value = value.substr(0, pos);
-        value = value.substr(pos+1);
-
-        //test if end is without failure
-        string testStr = "end_";
-        testStr += ((mes.request) ? "request_" : "answer_") + mes.command + ";";
-        if (value.compare(testStr) != 0)
-        {
-            mes.transferFailure = true;
-            //sendrepeatrequest()
-            cout << "send repeat request not implemented yet" << endl;
-        }
+        header = header.substr(pos+1);
     }
-    else
-    {
+    value = value.substr(pos + 8);
+    try {
+        mes.value = value.substr(value.find("message::") + 9, value.find("::message"));
+    } catch (...) {
         mes.transferFailure = true;
-        //sendrepeatrequest()
-        cout << "send repeat request not implemented yet" << endl;
     }
+
+
 
     return mes;
 }
-
+*/
 //starts the listening Thread, now commands can be received
 void MessageListener::initListening() {
     listeningThread = thread(&MessageListener::listening, this);

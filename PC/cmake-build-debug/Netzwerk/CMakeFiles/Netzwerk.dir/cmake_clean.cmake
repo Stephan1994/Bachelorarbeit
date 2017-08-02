@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Netzwerk.dir/ProzessPi.c.o"
+  "CMakeFiles/Netzwerk.dir/ProzessPiClient.c.o"
   "CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.o"
+  "CMakeFiles/Netzwerk.dir/NetzwerkClient.c.o"
   "libNetzwerk.pdb"
   "libNetzwerk.a"
 )

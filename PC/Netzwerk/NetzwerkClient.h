@@ -26,8 +26,7 @@
 
 
 
-#define  MSGSIZE 20
-#define RCVBUFSIZE 9000
+#define  BUFSIZ 16384
 
 struct ThreadUebergabe
 {
@@ -47,7 +46,8 @@ pthread_t tid[2];
 int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfIP,FILE *VonP,FILE *ZuP);
 void *TCPtoP(void *);
 void *PtoTCP(void *);
-void extractCommand(char *BufferIn, char *Command);
+void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType);
+void extractValue(char *BufferIn, char *Value);
 void extractValue(char *BufferIn, char *Value);
 #ifdef NETZWERK_LIB
 int fd_set_blocking(int fd, int blocking);

@@ -11,7 +11,7 @@
  * 
 */
 #include <stdint.h>
-#include "ProzessPi.h"
+#include "ProzessPiClient.h"
 
 
 int Funktion_zum_Umwandeln_SPI(struct SPI_Wandler(* DieserWandler), int FunktionsNummer)

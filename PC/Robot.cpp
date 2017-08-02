@@ -4,8 +4,12 @@
 
 #include "Robot.h"
 
+#include "ProtocolLibrary.h"
 //MessageLength
-#define ML 1056
+//#define ML 8192
+#include <iostream>
+#include <cstring>
+#include "Netzwerk/ProzessPiClient.h"
 
 using std::cout;
 using std::endl;
@@ -19,9 +23,9 @@ Robot::Robot()
 	cout << "RobotMessage: " << RobotMessage << endl;
 }
 
-Robot::~Robot(){}
+Robot::~Robot() = default;
 
-bool Robot::connect(string ip, int port)
+bool Robot::connect(string ip)
 {
     //convert ip string to char*
     char ipArray[16];
@@ -38,76 +42,95 @@ bool Robot::connect(string ip, int port)
 	
 
     //ToDo maybe get ipaddress
-	char message[ML]; 
-	bool success = createMessage(message, "connect", "IP");
-	if (success)
-	{
-    	SendeKommando(RobotMessage, message);
-	}
-	else 
-	{
-		sendSplittedMessage(message, "connect", "IP");
-	}
+	char message[ML];
+	if (!ProtocolLibrary::createMessage(message, "connect", "IP"))
+        return false;
+
+    SendeKommando(RobotMessage, message);
 
     listener.initListening();
     future<string> answerFuture = listener.addListener("connect");
 
     string answer = answerFuture.get();
 
-    return answer.compare("connected") == 0;
+    return answer == "connected";
 }
 
 bool Robot::closeConnection()
 {
     char message[ML];
-    if (createMessage(message, "disconnect", "IP"))
-    {
+    if (ProtocolLibrary::createMessage(message, "disconnect", "IP"))
         SendeKommando(RobotMessage, message);
-    }
-    else
-    {
-        sendSplittedMessage(message, "disconnect", "IP");
-    }
+
     future<string> answerFuture = listener.addListener("disconnect");
     string answer = answerFuture.get();
-    if (answer.compare("disconnected") == 0){
+    if (answer == "disconnected"){
         listener.stopListening();
         done();
         return true;
-    } else {
+    }
+    return false;
+}
+/*
+bool Robot::createMessage(char* out, string command, string value, bool request)
+{
+    string header = createHeader(request, command, false, 0);
+    if (header.length() + 18 + value.length() >= ML){
         return false;
     }
 
-}
+    string message = header + "message::" + value + "::message";
 
-bool Robot::createMessage(char* out, string command, string value)
-{
-	string message = "start_request_" + command + ":" + value + ":" + "end_request_" + command;
-	if (message.length() >= ML)
-	{
-		return false;
-	}	
-
-	strncpy(out, message.c_str(), message.length());
+    strncpy(out, message.c_str(), message.length());
     out[message.length()] = 0;
-	return true;
+    return true;
 }
 
-void Robot::sendSplittedMessage(char* out, string command, string value)
+string Robot::createHeader(bool request, string command, bool parted, int parts, int partnr)
 {
-	cout << "SplittedMessage not implemented yet!" << endl;
+    string header = "header::";
+    if (request)
+        header += "type: request,";
+    else
+        header += "type: answer,";
+    header += "command: " + command;
+    if (parted){
+        header += ", parted: yes, ";
+        header += "partnr: " + to_string(partnr);
+        header += ", parts: " + to_string(parts);
+    }
+    header += "::header";
+
+    return header;
 }
 
+int Robot::createSplittedMessage(char* out, string command, string value, bool request, int part, int parts)
+{
+    string header;
+    int overhead;
+    if (parts == 0)
+    {
+        auto estimatedParts = (int) ceil(value.length() / (ML - (18 + 76)));
+        header = Robot::createHeader(request, command, true, estimatedParts, part);
+        cout << header.length();
+        overhead = (int) header.length() + 18;
+        parts = (int) ceil(value.length() / (ML-overhead));
+    }
+    header = Robot::createHeader(request, command, true, parts, part);
+    overhead = (int) header.length() + 18;
+    string valuePart = value.substr(0, (unsigned long) (ML - overhead - 1));
+    string message = header + "message::" + valuePart + "::message";
+
+    strncpy(out, message.c_str(), message.length());
+    out[message.length()] = 0;
+    return (int) valuePart.length();
+}
+*/
 void Robot::forward(int speed)
 {
-	char message[ML]; 
-	bool success = createMessage(message, "forward", to_string(speed));
-	if (success)
-	{
+	char message[ML];
+	if (ProtocolLibrary::createMessage(message, "forward", to_string(speed)))
     	SendeKommando(RobotMessage, message);
-	}
-	else 
-	{
-		sendSplittedMessage(message, "connect", "IP");
-	}
+
+
 }

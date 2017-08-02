@@ -9,7 +9,11 @@ add_subdirectory (Netzwerk)
 set(SOURCE_FILES
         main.cpp
         Robot.cpp
-        Robot.h MessageListener.cpp MessageListener.h)
+        Robot.h
+        MessageListener.cpp
+        MessageListener.h
+        ProtocolLibrary.cpp
+        ProtocolLibrary.h)
 
 set(COMMON_FLAGS "")
 set(CMAKE_CXX_FLAGS "-std=c++11 -lpthread ${COMMON_FLAGS}")

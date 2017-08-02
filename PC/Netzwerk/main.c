@@ -1,6 +1,6 @@
 #include <stdio.h>
 #define PROZESSPI_LIB
-#include "ProzessPi.h"
+#include "ProzessPiClient.h"
 
 
 int main()

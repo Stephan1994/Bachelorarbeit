@@ -1,2 +1,2 @@
-/usr/bin/ar qc libNetzwerk.a  CMakeFiles/Netzwerk.dir/ProzessPi.c.o CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.o
+/usr/bin/ar qc libNetzwerk.a  CMakeFiles/Netzwerk.dir/ProzessPiClient.c.o CMakeFiles/Netzwerk.dir/Funktion_zum_Umwandeln.c.o CMakeFiles/Netzwerk.dir/NetzwerkClient.c.o
 /usr/bin/ranlib libNetzwerk.a
