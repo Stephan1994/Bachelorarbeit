@@ -1,6 +1,0 @@
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/CMakeFiles/PC.dir
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/Netzwerk/CMakeFiles/rebuild_cache.dir
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/Netzwerk/CMakeFiles/edit_cache.dir
-/home/stephan/Bachelorarbeit/PC/cmake-build-debug/Netzwerk/CMakeFiles/Netzwerk.dir
