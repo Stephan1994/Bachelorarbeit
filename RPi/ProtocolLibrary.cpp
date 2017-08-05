@@ -33,9 +33,9 @@ string ProtocolLibrary::createHeader(bool request, string command, bool parted, 
 		header += "type: answer,";
 	header += "command: " + command;
 	if (parted){
-		header += ", parted: yes, ";
+		header += ",parted: yes,";
 		header += "partnr: " + to_string(partnr);
-		header += ", parts: " + to_string(parts);
+		header += ",parts: " + to_string(parts);
 	}
 	header += "::header";
 	
@@ -67,42 +67,52 @@ int ProtocolLibrary::createSplittedMessage(char* out, string command, string val
 ProtocolLibrary::Message ProtocolLibrary::extractHeader(string value)
 {
     Message mes;
-    size_t pos = value.find("::header");
-    string header = value.substr(value.find("header::")+8, pos);
+    size_t endPos = value.find("::header");
+    string header = value.substr(value.find("header::")+8, endPos-8);
 
-    string headerField, fieldType, fieldValue;
-    size_t fieldPos;
+    string headerField;
+    size_t pos;
     while((pos = header.find(',')) != string::npos) {
         headerField = header.substr(0, pos);
-        fieldPos = headerField.find(':');
-        fieldType = headerField.substr(0, fieldPos);
-        fieldValue = headerField.substr(fieldPos + 1);
-
-        if (fieldType == "type") {
-            mes.request = (fieldValue == "request");
-        } else if (fieldType == "command") {
-            mes.command = fieldValue;
-        } else if (fieldType == "parted") {
-            mes.parted = (fieldValue == "yes");
-        } else if (fieldType == "parts") {
-            mes.parts = stoi(fieldValue);
-        } else if (fieldType == "part") {
-            mes.part = stoi(fieldValue);
-        } else {
-            mes.transferFailure = true;
+        if (!ProtocolLibrary::extractField(headerField, &mes)){
             break;
         }
-
         header = header.substr(pos+1);
     }
-    value = value.substr(pos + 8);
+
+    if (!mes.transferFailure && !header.empty()){
+        ProtocolLibrary::extractField(header, &mes);
+    }
+    value = value.substr(endPos + 8);
     try {
-        mes.value = value.substr(value.find("message::") + 9, value.find("::message"));
+        mes.value = value.substr(value.find("message::") + 9, value.find("::message") - 9);
     } catch (...) {
         mes.transferFailure = true;
     }
 
     return mes;
+}
+bool ProtocolLibrary::extractField(string headerField, Message *mes){
+    size_t fieldPos = headerField.find(':');
+    string fieldType = headerField.substr(0, fieldPos);
+    string fieldValue = headerField.substr(fieldPos + 2);
+
+    if (fieldType == "type") {
+        mes->request = (fieldValue == "request");
+    } else if (fieldType == "command") {
+        mes->command = fieldValue;
+    } else if (fieldType == "parted") {
+        mes->parted = (fieldValue == "yes");
+    } else if (fieldType == "parts") {
+        mes->parts = stoi(fieldValue);
+    } else if (fieldType == "partnr") {
+        mes->part = stoi(fieldValue);
+    } else {
+        mes->transferFailure = true;
+        return false;
+    }
+
+    return true;
 }
 
 //"header::type:(request/answer),command: commandValue[, parted: yes, partnr: 00, parts: 00]::header"
@@ -134,4 +144,18 @@ void ProtocolLibrary::extractValue(char *BufferIn, char *Value)
     int endValue = (int)(strstr(BufferIn, "::message") - BufferIn);
 
     strncat(Value, BufferIn + startValue, (size_t)(endValue - startValue));
+
+    /*
+    while (BufferIn[i] != ':' && i< BUFSIZ-2){i++;};
+    int j = i+1;
+    while (BufferIn[j] != ':' && j< BUFSIZ-2){j++;};
+
+    int k, l = 0;
+    for (k=0, l=i+1; k< BUFSIZ-2, l<j; k++, l++)
+    {
+        Value[k] = BufferIn[l];
+    }
+    Value[k] = '\0';
+    */
+    //str_cut(Value, 0, j-i-1);
 }

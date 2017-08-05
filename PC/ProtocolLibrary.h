@@ -25,6 +25,8 @@ class ProtocolLibrary
 		static int createSplittedMessage(char* out, string command, string value, bool request, int parts = 0, int part = 0);
         static void extractValue(char *BufferIn, char *Value);
         static void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType = (char *)("command"));
+private:
+    static bool extractField(string HeaderField, Message *mes);
 };
 
 #endif //PROTLIB_H
