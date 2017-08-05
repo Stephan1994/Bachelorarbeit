@@ -140,15 +140,15 @@ int init(char *IP,char *PORT){
 			
             			printf("Get current working directory..\n");
             getcwd(wd,sizeof(wd));   
-			if ( access("Netzwerk.out", F_OK) != -1)
+			if ( access("NetzwerkClient.out", F_OK) != -1)
 			{
-				printf("Netzwerk.out is in current working directory!\n");
-				strcat(wd,"/Netzwerk.out");
+				printf("NetzwerkClient.out is in current working directory!\n");
+				strcat(wd,"/NetzwerkClient.out");
 			}
 			else
 			{
-				printf("Netzwerk.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
-				strcat(wd,"/Netzwerk/Netzwerk.out");
+				printf("NetzwerkClient.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
+				strcat(wd,"/Netzwerk/NetzwerkClient.out");
 			}  
 
           //  sprintf(wd,"/home/theo/Schreibtisch/MasterArbeit/Programmierung/Laptop/ProzessStation");
