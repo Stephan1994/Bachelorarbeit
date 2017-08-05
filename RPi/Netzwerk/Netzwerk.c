@@ -55,7 +55,6 @@
 void sig_handler(int signo);
 
 int main(int argc,char* argv[]){
-
 	char BufferIn[BUFSIZ];
 	char BufferOut[BUFSIZ];
 	a=0;
@@ -375,6 +374,7 @@ int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfI
 }
 void *TCPtoP(void *TCPtoP_Struct)
 {
+
 	// hier kommt recv() und fprintf()
 	//typecast
 	
@@ -437,6 +437,7 @@ while(flag_sigpipe == 0)
 
 
 }
+
 void *PtoTCP(void *PtoTCP_Struct)
 {
 	
@@ -492,6 +493,7 @@ void *PtoTCP(void *PtoTCP_Struct)
 			}
 			printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
 			char value[len];
+			memset(&value[0], 0, sizeof(value));
 			extractValue(Buffer, value);
 			len = strlen(value);
 			printf("Value: %s	Length: %d\n", value, len);
@@ -523,9 +525,9 @@ void *PtoTCP(void *PtoTCP_Struct)
 		//printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",BufferIn); 
 	
 	*/
-	
-	}
-	
+}
+
+/*
 //"header::type:(request/answer),command: commandValue[, parted: yes, partnr: 00, parts: 00]::header"
 void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType)
 {
@@ -548,7 +550,7 @@ void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldTyp
         startHeader = i+1;
     }
 }
-
+*/
 void extractValue(char *BufferIn, char *Value)
 {
     int startValue = (int)(strstr(BufferIn, "message::") - BufferIn + 9);

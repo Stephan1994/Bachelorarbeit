@@ -236,9 +236,10 @@ void *TCPtoP(void *TCPtoP_Struct) {
             kill(PapaPID, SIGUSR1);
 
             char value[strlen(Buffer)];
+            memset(&value[0], 0, sizeof(value));
             extractValue(Buffer, value);
-            len = strlen(value);
-            printf("Value: %s	Length: %d\n", value, len);
+            //len = strlen(value);
+            //printf("Value: %s	Length: %d\n", value, len);
             //printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
             //printf("Compare: %d\n", strcmp(value, "disconnected"));
             if (strcmp(value, "disconnected") == 0)
@@ -303,9 +304,10 @@ void *PtoTCP(void *PtoTCP_Struct) {
             }
             printf("Aus der Pipe geholt und ans Socket gesendet: %s \n", Buffer);
             char command[len];
+            memset(&command[0], 0, sizeof(command));
             extractHeaderFieldValue(Buffer, command, "command");
             len = strlen(command);
-            printf("Value: %s	Length: %d\n", command, len);
+            //printf("Value: %s	Length: %d\n", command, len);
             //printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
             //printf("Compare: %d\n", strcmp(command, "disconnect"));
             if (strcmp(command, "disconnect") == 0)

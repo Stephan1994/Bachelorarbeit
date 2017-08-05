@@ -49,7 +49,7 @@ int RunServer(int sock, char *BufferIn,char *BufferOut,FILE *VonP,FILE *ZuP);
 int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfIP,FILE *VonP,FILE *ZuP);
 void ReadAndWrite(int fd,char *BufferIn,char *BufferOut,FILE *VonP, FILE *ZuP);
 void extractValue(char *BufferIn, char *Value);
-void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType)
+void extractHeaderFieldValue(char *BufferIn, char *Command, char *HeaderFieldType);
 void str_cut(char *str, int begin , int len);
 void *TCPtoP(void *);
 void *PtoTCP(void *);
