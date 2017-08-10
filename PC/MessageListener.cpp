@@ -36,12 +36,19 @@ void MessageListener::listening() {
         //if the message is splitted the function collects all parts and then add it to incoming queue
         if(FD_ISSET(fdEmpfangen, &receiveSet) && ret != -1 && !stop){
             char recvdValue[10000];
+            std::fill(recvdValue, recvdValue + 10000, 0);
             //get new message
             EmpfangeRobotKommando(recvdValue);
             //convert it to string
             string recvdString(recvdValue);
+            cout << "RecvdString: " << recvdString << endl;
             ProtocolLibrary::Message mes = ProtocolLibrary::extractHeader(recvdString);
-
+            if (mes.command == "disconnect")
+                cout << "disconnect came" << endl;
+            if (mes.part == 487){
+                cout << "fast finished" << endl;
+            }
+            cout << "After extractHeader." << endl;
             //test if catched message is a splitted
             if (mes.parted && !mes.transferFailure){
                 //add to buffer if nothing exists there until now
@@ -104,6 +111,7 @@ void MessageListener::listening() {
                 }
             }
         }
+        cout << "Reading Kommando is ready.\n" << endl;
     }
 }
 

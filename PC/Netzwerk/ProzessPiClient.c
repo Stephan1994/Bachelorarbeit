@@ -15,6 +15,9 @@ pid_t fork(void);
 pthread_mutex_t I2C_Konflock=PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t SPI_Konflock=PTHREAD_MUTEX_INITIALIZER;
 void sig_handler(int signo);
+
+int fd_set_blocking(int fd, int blocking) ;
+
 volatile int Flag_Start=0;
 volatile int Flag_Stop =0;
 volatile int Flag_Start_Messung=0;
@@ -211,7 +214,9 @@ void done()
 
 int SendeKommando(char *Kommando, char* Wert)
 {
-		if(fprintf(fd_senden,"%s,%s;\n",Kommando,Wert) == 0)
+    int len = (int)strlen(Kommando) + (int)strlen(Wert) + 2;
+    printf("Length: %d\n", len);
+		if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
 		{
 			return 0;
 		}
@@ -465,23 +470,56 @@ void I2C_printListe()
 
 int EmpfangeRobotKommando(char* value)
 {
-	int i = 0;
-	int filePosition = ftell(fd_empfangen);
-	while((Kommando[i++]=fgetc(fd_empfangen)) != ',');
-	if (strcmp(Kommando,"Robot"))
-	{
-		char buffer[10000]; //seems to be size of pipe
-		i = 0;	
-		while((buffer[i++]=fgetc(fd_empfangen)) != ';');
-		buffer[i]='\0';
-		strncpy(value, buffer, sizeof(buffer));
-		return 16;
-	}
-	else
-	{
-		fseek(fd_empfangen, filePosition, SEEK_SET);
-		return EmpfangeKommando();
-	}
+	int i = 0, j = 0;
+//	int filePosition = ftell(fd_empfangen);
+//    printf("EmpfangeKommando: vor Kommando erkennen\n");
+    char lengthArray[10];
+	memset(lengthArray, 0, 10);
+    int ch;
+	while(i < 10 && (ch=fgetc(fd_empfangen)) != ','){
+        if (ch == EOF){
+            if (ferror(fd_empfangen))
+                clearerr(fd_empfangen);
+            continue;
+        }
+
+        lengthArray[i] = (char) ch;
+        i++;
+
+    };
+    lengthArray[i] = '\0';
+    int length = 0;
+
+    if(sscanf(lengthArray, "%d", &length) < 1){
+        printf("failure while reading \n");
+        return -1;
+    }
+    //printf ("Length: %d", length);
+
+    char buffer[length];
+    memset(buffer, 0, (size_t)length);
+    i = 0;
+    printf("Vor in Buffer schreiben.\n");
+    while(i < length){
+        if ((ch = fgetc(fd_empfangen)) == EOF ){
+            clearerr(fd_empfangen);
+            continue;
+        }
+
+        buffer[i] = (char)ch;
+        i++;
+    }
+    i--;
+    buffer[i]='\0';
+    //printf("Nach in Buffer schreiben. Buffer: %s\n", buffer);
+    while(buffer[j] != ',' && j < i){
+        Kommando[j] = buffer[j];
+        j++;
+    };
+    Kommando[j] = '\0';
+    strncpy(value, &buffer[j+1], strlen(buffer) - (j+1));
+    //printf("writing buffer is ready\n");
+    return 0;
 }
 
 int EmpfangeKommando()

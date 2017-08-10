@@ -15,9 +15,9 @@ class ProtocolLibrary
 			bool request{true};
 			string command;
 			string value;
-			bool parted;
-			int parts;
-			int part;
+			bool parted{false};
+			int parts{0};
+			int part{0};
 		};
 		static Message extractHeader(string value);
 		static bool createMessage(char* out, string command, string value, bool request = true);

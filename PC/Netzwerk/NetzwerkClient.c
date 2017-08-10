@@ -50,6 +50,8 @@
 #include <sys/ipc.h>
 #include <sys/select.h>
 #include <fcntl.h>
+//#include </usr/include/linux/fcntl.h>
+
 
 #define NETZWERK_LIB
 
@@ -124,6 +126,7 @@ int main(int argc, char *argv[]) {
             perror(NULL);
             printf("\n");
         }
+        //fcntl(zuP, F_SETPIPE_SZ, 1048576);
 
         if ((ZuP = fdopen(zuP, "w")) < 0) {
             printf("Pipe TCPCtoP fdopen: ");
@@ -202,9 +205,8 @@ int ErstelleClient(char *BufferIn, char *BufferOut, int Port, char *IP, int Size
     return sock;
 }
 
+//Thread for communication between socket and ProzessPi
 void *TCPtoP(void *TCPtoP_Struct) {
-    // hier kommt recv() und fprintf()
-    //typecast
 
     printf("Tcp To P Thread steht! \n");
     struct ThreadUebergabe *hierhin;
@@ -212,66 +214,68 @@ void *TCPtoP(void *TCPtoP_Struct) {
     char Buffer[BUFSIZ];
     int RecvTemp;
     int stop = 0;
-    int len = 0;
 
+    //getting max writesize for writing in Pipes
+    int maxWrite = (int) pathconf("/tmp/TCPtoP", _PC_PIPE_BUF);
+
+    //loop for getting the messages from socket and writing it to Pipe
     while (stop == 0) {
-        // Ist was im Socket zum senden an die Pipe?
-        if ((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ - 1, 0)) == -1) {
-//	perror(NULL);
-        }
-        if (RecvTemp > 0) {
-            int tmp = strlen(Buffer);
-            //printf("Recv Temp ist so groß: %d \n",RecvTemp);
+        // receiving messages
+        RecvTemp = (int) recv(hierhin->fd, Buffer, (size_t) (BUFSIZ - 1), 0);
+
+        //if there is something to read, that's smaller than max writesize
+        if (RecvTemp > 0 && RecvTemp < maxWrite) {
 
             Buffer[RecvTemp] = '\0';
 
-            printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
+            //printf("Aus dem Socket geholt und in die Pipe gesendet: Length: %d; Value: %s \n", (int)strlen(Buffer), Buffer);
 
-            if ((tmp = fprintf(hierhin->ZuP, "%s", Buffer)) < 0)    //write(fileno(ZuP),BufferOut,10))== 0)
+            //TODO change fprintf to write
+            //write to TCPtoP-Pipe
+            if (fprintf(hierhin->ZuP, "%s", Buffer) < 0)
             {
                 perror("fprintf");
                 printf("tmp ist NULL? \n");
             }
             fflush(hierhin->ZuP);
-            kill(PapaPID, SIGUSR1);
+            //kill(PapaPID, SIGUSR1);
+        }
+        //if there is something to read, that's bigger than max writesize, the message have to be splitted
+        else if (RecvTemp > maxWrite){
+            int written = maxWrite;
+            int fd_ZuP = fileno(hierhin->ZuP);
+            //write packages with a size of maxWriteSize to Pipe
+            while(written < RecvTemp){
+                write(fd_ZuP, &Buffer[written-maxWrite], (size_t)maxWrite);
+                written += maxWrite;
+            }
+            written -= maxWrite;
+            //rest of message sends here
+            write(fd_ZuP, &Buffer[written], (size_t) (RecvTemp-written));
+            fflush(hierhin->ZuP);
+            //kill(PapaPID, SIGUSR1);
 
+        }
+
+        //waiting for the disconnected-message to end this thread  itself
+        //smaller than 400 to avoid large values that could not be disconnect
+        if(RecvTemp < 400){
             char value[strlen(Buffer)];
             memset(&value[0], 0, sizeof(value));
+
             extractValue(Buffer, value);
-            //len = strlen(value);
-            //printf("Value: %s	Length: %d\n", value, len);
-            //printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
-            //printf("Compare: %d\n", strcmp(value, "disconnected"));
+
             if (strcmp(value, "disconnected") == 0)
             {
                 stop = 1;
             }
-
         }
+
+        //reset Buffer
+        memset(&Buffer[0], 0, BUFSIZ);
+
     }
     printf("TCPtoP nähert sich dem Ende! \n");
-   /* fd_set_blocking(hierhin->fd, 0);
-    if ((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ - 1, 0)) == -1) {
-//	perror(NULL);
-    }
-    if (RecvTemp > 0) {
-        int tmp = strlen(Buffer);
-        //printf("Recv Temp ist so groß: %d \n",RecvTemp);
-
-        Buffer[RecvTemp] = '\0';
-
-        //printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
-
-        if ((tmp = fprintf(hierhin->ZuP, "%s", Buffer)) < 0)    //write(fileno(ZuP),BufferOut,10))== 0)
-        {
-            perror("fprintf");
-            printf("tmp ist NULL? \n");
-        }
-        fflush(hierhin->ZuP);
-        kill(PapaPID, SIGUSR1);
-    }*/
-
-
 }
 
 void *PtoTCP(void *PtoTCP_Struct) {
@@ -282,7 +286,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
     struct ThreadUebergabe *hierhin;
     hierhin = (struct ThreadUebergabe *) PtoTCP_Struct;
     char Buffer[BUFSIZ];
-    int len, len_send;
+    int len, len_send = 0;
     //Ist was in der Pipe zum Senden ans Socket?
 
     char c;
@@ -294,26 +298,29 @@ void *PtoTCP(void *PtoTCP_Struct) {
     //fd_set_blocking(fileno(hierhin->VonP),1);
     while (stop == 0) {
         usleep(100);
-        if (fgets(Buffer, BUFSIZ-1, hierhin->VonP) != NULL) {
+        if (fgets(Buffer, BUFSIZ, hierhin->VonP) != NULL) {
             //printf("PtoTCP meldet:	%s \n", Buffer);
-            len = strlen(Buffer) - 1;
-            if ((len_send = send(hierhin->fd, Buffer, len, 0) != len)) {
-                printf("Error beim Senden! \n");
-                fprintf(Log, "Error beim Senden! \n");
-                perror(NULL);
+            len = (int) strlen(Buffer) - 1;
+            int tempLen = len;
+            while((len_send = send(hierhin->fd, &Buffer[len_send], (size_t) tempLen, 0) < tempLen))
+            {
+                tempLen -= len_send;
             }
             printf("Aus der Pipe geholt und ans Socket gesendet: %s \n", Buffer);
-            char command[len];
-            memset(&command[0], 0, sizeof(command));
-            extractHeaderFieldValue(Buffer, command, "command");
-            len = strlen(command);
-            //printf("Value: %s	Length: %d\n", command, len);
-            //printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
-            //printf("Compare: %d\n", strcmp(command, "disconnect"));
-            if (strcmp(command, "disconnect") == 0)
-            {
-                stop = 1;
+
+            if (len < 400){
+                char command[len];
+                memset(&command[0], 0, sizeof(command));
+                extractHeaderFieldValue(Buffer, command, "command");
+                //printf("Value: %s	Length: %d\n", command, len);
+                //printf("Should be: %s	Length: %d\n", "disconnect", strlen("disconnect"));
+                //printf("Compare: %d\n", strcmp(command, "disconnect"));
+                if (strcmp(command, "disconnect") == 0)
+                {
+                    stop = 1;
+                }
             }
+
         }
     }
 
