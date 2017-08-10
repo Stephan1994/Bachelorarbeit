@@ -1,6 +1,6 @@
 CC = g++
-CFLAGS = -Wall -std=c++11
-LDFLAGS = -lpthread
+CFLAGS = -Wall -std=c++11 `pkg-config --cflags opencv`
+LDFLAGS = -lpthread `pkg-config --libs opencv`
 
 OBJ = main.o Robot.o MessageListener.o ProtocolLibrary.o
 OBJ_NETWORK = Netzwerk/ProzessPiClient.o Netzwerk/Funktion_zum_Umwandeln.o

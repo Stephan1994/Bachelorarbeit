@@ -3,6 +3,8 @@ project(PC)
 
 set(CMAKE_CXX_STANDARD 11)
 
+find_package( OpenCV REQUIRED )
+
 include_directories ("${PROJECT_SOURCE_DIR}/Netzwerk")
 add_subdirectory (Netzwerk)
 
@@ -22,4 +24,6 @@ set(CMAKE_C_COMPILER gcc)
 set(CMAKE_CXX_COMPILER g++)
 
 add_executable(PC ${SOURCE_FILES})
+include_directories(${OpenCV_INCLUDE_DIRS})
+target_link_libraries( PC ${OpenCV_LIBS} )
 target_link_libraries (PC Netzwerk)
