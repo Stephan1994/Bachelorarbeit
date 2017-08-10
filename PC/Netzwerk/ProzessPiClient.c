@@ -428,7 +428,7 @@ void I2C_printListe()
 	
 }
 
-//reading messages from TCPtoP-Pipe and writes it to the value parameter
+
 int EmpfangeRobotKommando(char* value)
 {
 	int i = 0, j = 0;
@@ -462,11 +462,14 @@ int EmpfangeRobotKommando(char* value)
 
     char buffer[length];
     memset(buffer, 0, (size_t)length);
-    i = 0;
+    i = 0, errorCount = 0;
     //reading message into buffer
     while(i < length){
         if ((ch = fgetc(fd_empfangen)) == EOF ){
             clearerr(fd_empfangen);
+            if (errorCount == 10)
+                return -1;
+            errorCount++;
             continue;
         }
 

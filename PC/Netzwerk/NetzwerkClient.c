@@ -31,15 +31,15 @@ void sig_handler(int signo);
 
 int main(int argc, char *argv[]) {
 
-    char BufferIn[BUFSIZ];
-    char BufferOut[BUFSIZ];
+    char BufferIn[BUFFERSIZE];
+    char BufferOut[BUFFERSIZE];
     debug = 0;
 
     int vonP, zuP;
     FILE *VonP, *ZuP;
 
-    if (signal(SIGUSR2, sig_handler) == SIG_ERR)
-        printf("\n can't catch SIG_USR2");
+    if (signal(SIGUSR1, sig_handler) == SIG_ERR)
+        printf("\n can't catch SIG_USR1");
     if (signal(SIGPIPE, sig_handler) == SIG_ERR)
         printf("\n can't catch SIGPIPE");
 
@@ -61,7 +61,6 @@ int main(int argc, char *argv[]) {
         }
         return 0;
     }
-    printf(" MEINE PID : %d \n", getpid());
 
     //Client
     if (!strcmp(argv[1], "Client")) {
@@ -70,14 +69,15 @@ int main(int argc, char *argv[]) {
         // open FIFOs
         if ((vonP = open("/tmp/PtoTCP", O_RDONLY | O_NONBLOCK | O_CREAT)) < 0)
         {
-
             printf("Pipe PtoTCPC open: ");
             fprintf(Log, "Netzwerk meldet:	Pipe PtoS open:  %s \n", strerror(errno));
             perror(NULL);
             printf("\n");
 
         }
-        if ((VonP = fdopen(vonP, "r")) < 0) {
+
+        if ((VonP = fdopen(vonP, "r")) < 0)
+        {
             printf("Pipe PtoTCPC fdopen: ");
             fprintf(Log, "Netzwerk meldet:	Pipe PtoS fdopen:  %s \n", strerror(errno));
             perror(NULL);
@@ -173,7 +173,7 @@ void *TCPtoP(void *TCPtoP_Struct) {
     printf("Tcp To P Thread steht! \n");
     struct ThreadUebergabe *hierhin;
     hierhin = (struct ThreadUebergabe *) TCPtoP_Struct;
-    char Buffer[BUFSIZ];
+    char Buffer[BUFFERSIZE];
     int RecvTemp;
     int stop = 0;
 
@@ -183,7 +183,7 @@ void *TCPtoP(void *TCPtoP_Struct) {
     //loop for getting the messages from socket and writing it to Pipe
     while (stop == 0) {
         // receiving messages
-        RecvTemp = (int) recv(hierhin->fd, Buffer, (size_t) (BUFSIZ - 1), 0);
+        RecvTemp = (int) recv(hierhin->fd, Buffer, (size_t) (BUFFERSIZE - 1), 0);
 
         //if there is something to read, that's smaller than max writesize
         if (RecvTemp > 0 && RecvTemp < maxWrite) {
@@ -234,7 +234,7 @@ void *TCPtoP(void *TCPtoP_Struct) {
         }
 
         //reset Buffer
-        memset(&Buffer[0], 0, BUFSIZ);
+        memset(&Buffer[0], 0, BUFFERSIZE);
 
     }
     printf("TCPtoP nähert sich dem Ende! \n");
@@ -247,7 +247,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
 
     struct ThreadUebergabe *hierhin;
     hierhin = (struct ThreadUebergabe *) PtoTCP_Struct;
-    char Buffer[BUFSIZ];
+    char Buffer[BUFFERSIZE];
     int len = 0, len_send = 0, stop = 0;
 
     //loop to read messages from PtoTCP-Pipe and write it into socket
@@ -255,7 +255,7 @@ void *PtoTCP(void *PtoTCP_Struct) {
         usleep(100);
 
         //if there's something to read
-        if (fgets(Buffer, BUFSIZ, hierhin->VonP) != NULL) {
+        if (fgets(Buffer, BUFFERSIZE, hierhin->VonP) != NULL) {
             len = (int) strlen(Buffer) - 1;
             int tempLen = len;
             //sending the data to the pipe. Repeated until everything is sent.
