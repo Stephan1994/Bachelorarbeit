@@ -40,7 +40,7 @@ volatile sig_atomic_t a;
  int debug; 
 int PapaPID;
 int ErrorCounter = 0;
-int flag_sigpipe = 0;
+int flag_stop = 0;
 int closeNetwork = 0;
 pthread_t tid[2];
 

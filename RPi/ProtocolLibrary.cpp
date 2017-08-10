@@ -52,12 +52,18 @@ int ProtocolLibrary::createSplittedMessage(char* out, string command, string val
 		header = ProtocolLibrary::createHeader(request, command, true, estimatedParts, part);
 		overhead = (int) header.length() + 18;
 		parts = (int) ceil((double)value.length() / (double)(ML-overhead));
+		cout << "createSplittedMessage: " << parts << endl;
 	}
 	header = ProtocolLibrary::createHeader(request, command, true, parts, part);
 	overhead = (int) header.length() + 18;
-	string valuePart = value.substr(0, (unsigned long) (ML - overhead - 1));
+	string valuePart;
+	if ((int) value.length() < (ML- overhead - 1))
+		valuePart = value;
+	else
+		valuePart = value.substr(0, (unsigned long) (ML - overhead - 1));
 	string message = header + "message::" + valuePart + "::message";
 
+	cout << message << endl;
 	strncpy(out, message.c_str(), message.length());
 	out[message.length()] = 0;
 	return (int) valuePart.length();

@@ -144,7 +144,7 @@ int main(int argc,char* argv[]){
 		while (closeNetwork == 0)
 		{
 			RunServer(sock, BufferIn, BufferOut, VonP, ZuP);
-			flag_sigpipe = 0;
+			flag_stop = 0;
 		}
 		
 		close(sock);    
@@ -375,67 +375,59 @@ int ErstelleClient(char *BufferIn,char *BufferOut,int Port, char *IP,int SizeOfI
 void *TCPtoP(void *TCPtoP_Struct)
 {
 
-	// hier kommt recv() und fprintf()
-	//typecast
-	
 	printf("Tcp To P Thread steht! \n");
-	struct ThreadUebergabe *hierhin;
-	hierhin = (struct ThreadUebergabe *)TCPtoP_Struct;
-	char Buffer[BUFSIZ];
-	int RecvTemp;
-	
-	
-while(flag_sigpipe == 0)
-{
-	// Ist was im Socket zum senden an die Pipe?
-	if((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ-1,0)) == -1 )
-	{
-//	perror(NULL);
-	} 
-	if(RecvTemp > 0)
-	{
-		int tmp=strlen(Buffer);
-		//printf("Recv Temp ist so groß: %d \n",RecvTemp);
-		
-		Buffer[RecvTemp] = '\0';
-		
-		printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
-		
-		if((tmp = fprintf(hierhin->ZuP,"%s",Buffer))<0)	//write(fileno(ZuP),BufferOut,10))== 0)
-		{
-			perror("fprintf");
-			printf("tmp ist NULL? \n");
-		}
-		fflush(hierhin->ZuP);
-		kill(PapaPID,SIGUSR1);
-		
-	}
-}
-	printf("TCPtoP nähert sich dem Ende! \n");
-	fd_set_blocking(hierhin->fd,0);
-	if((RecvTemp = recv(hierhin->fd, Buffer, BUFSIZ-1,0)) == -1 )
-	{
-//	perror(NULL);
-	} 
-	if(RecvTemp > 0)
-	{
-		int tmp=strlen(Buffer);
-		//printf("Recv Temp ist so groß: %d \n",RecvTemp);
-		
-		Buffer[RecvTemp] = '\0';
-		
-		//printf("Aus dem Socket geholt und in die Pipe gesendet: %s \n", Buffer);
-			
-		if((tmp = fprintf(hierhin->ZuP,"%s",Buffer))<0)	//write(fileno(ZuP),BufferOut,10))== 0)
-		{
-			perror("fprintf");
-			printf("tmp ist NULL? \n");
-		}
-		fflush(hierhin->ZuP);
-		kill(PapaPID,SIGUSR1);
-}
+    struct ThreadUebergabe *hierhin;
+    hierhin = (struct ThreadUebergabe *) TCPtoP_Struct;
+    char Buffer[BUFSIZ];
+    int RecvTemp;
 
+    //getting max writesize for writing in Pipes
+    int maxWrite = (int) pathconf("/tmp/TCPtoP", _PC_PIPE_BUF);
 
+    //loop for getting the messages from socket and writing it to Pipe
+    while (flag_stop == 0) {
+        // receiving messages
+        RecvTemp = (int) recv(hierhin->fd, Buffer, (size_t) (BUFSIZ - 1), 0);
+
+        //if there is something to read, that's smaller than max writesize
+        if (RecvTemp > 0 && RecvTemp < maxWrite) {
+
+            Buffer[RecvTemp] = '\0';
+
+            //printf("Aus dem Socket geholt und in die Pipe gesendet: Length: %d; Value: %s \n", (int)strlen(Buffer), Buffer);
+
+            //TODO change fprintf to write
+            //write to TCPtoP-Pipe
+            if (fprintf(hierhin->ZuP, "%s", Buffer) < 0)
+            {
+                perror("fprintf");
+                printf("tmp ist NULL? \n");
+            }
+            fflush(hierhin->ZuP);
+            //kill(PapaPID, SIGUSR1);
+        }
+        //if there is something to read, that's bigger than max writesize, the message have to be splitted
+        else if (RecvTemp > maxWrite){
+            int written = maxWrite;
+            int fd_ZuP = fileno(hierhin->ZuP);
+            //write packages with a size of maxWriteSize to Pipe
+            while(written < RecvTemp){
+                write(fd_ZuP, &Buffer[written-maxWrite], (size_t)maxWrite);
+                written += maxWrite;
+            }
+            written -= maxWrite;
+            //rest of message sends here
+            write(fd_ZuP, &Buffer[written], (size_t) (RecvTemp-written));
+            fflush(hierhin->ZuP);
+            //kill(PapaPID, SIGUSR1);
+
+        }
+
+        //reset Buffer
+        memset(&Buffer[0], 0, BUFSIZ);
+
+    }
+    printf("TCPtoP nähert sich dem Ende! \n");
 }
 
 void *PtoTCP(void *PtoTCP_Struct)
@@ -446,8 +438,8 @@ void *PtoTCP(void *PtoTCP_Struct)
 	// typecast
 	struct ThreadUebergabe *hierhin;
 	hierhin = (struct ThreadUebergabe *)PtoTCP_Struct;
-	char Buffer[201];
-	int len,len_send;
+	char Buffer[BUFSIZ];
+	int len,len_send = 0;
 	//Ist was in der Pipe zum Senden ans Socket?
 
 	char c;
@@ -462,9 +454,9 @@ void *PtoTCP(void *PtoTCP_Struct)
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//fd_set_blocking(fileno(hierhin->VonP),1);
-	while(flag_sigpipe == 0)
+	while(flag_stop == 0)
 	{	
-		printf("ptoTcp while gestartet\n");
+		//printf("ptoTcp while gestartet\n");
 		usleep(100);
 		fd_set setSelected = set;
 
@@ -483,25 +475,25 @@ void *PtoTCP(void *PtoTCP_Struct)
 		//	sleep(10);
 		//	printf("jetzt gehts weiter\n");
 		//	fgets(Buffer,200,hierhin->VonP);
-			printf("PtoTCP meldet:	%s \n",Buffer);
+			//printf("PtoTCP meldet:	%s \n",Buffer);
 			len = strlen(Buffer) - 1;
-			if((len_send = send(hierhin->fd, Buffer, len, 0) != len))
+			int tempLen = len;
+			while((len_send = send(hierhin->fd, &Buffer[len_send], tempLen, 0) < tempLen))
 			{ 	
-				printf("Error beim Senden! \n");
-				fprintf(Log,"Error beim Senden! \n");
-				perror(NULL);				
+					tempLen -= len_send;
 			}
-			printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
-			char value[len];
-			memset(&value[0], 0, sizeof(value));
-			extractValue(Buffer, value);
-			len = strlen(value);
-			printf("Value: %s	Length: %d\n", value, len);
-			printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
-			printf("Compare: %d\n", strcmp(value, "disconnected"));
-			if (strcmp(value, "disconnected") == 0)
-			{
-				flag_sigpipe = 1;
+			//printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
+			if (len < 400){
+				char value[len];
+				memset(&value[0], 0, sizeof(value));
+				extractValue(Buffer, value);
+				//printf("Value: %s	Length: %d\n", value, len);
+				//printf("Should be: %s	Length: %d\n", "disconnected", strlen("disconnected"));
+				//printf("Compare: %d\n", strcmp(value, "disconnected"));
+				if (strcmp(value, "disconnected") == 0)
+				{
+					flag_stop = 1;
+				}
 			}
 		} 
 	}

@@ -125,8 +125,14 @@ string RobotHandler::forward(string speed)
 
 string RobotHandler::getPicture(string camera)
 {
-	GPIOLibrary::takePictureUSB(stoi(camera));
-	return 0;
+	cout << "getPicture called!" << endl;
+	//cv::Mat picMat = GPIOLibrary::takePictureUSB(stoi(camera));
+	//cv::FileStorage fs(".xml", cv::FileStorage::WRITE + cv::FileStorage::MEMORY);
+	//fs << "pic" << picMat;
+	//string pic = fs.releaseAndGetString();
+	
+	cout << "after getting string" << endl;
+	return GPIOLibrary::takePictureUSB(stoi(camera));
 }
 
 string RobotHandler::getVideo(string camera)

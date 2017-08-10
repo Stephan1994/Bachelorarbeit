@@ -12,15 +12,17 @@ using cv::Vec3b;
 string GPIOLibrary::takePictureUSB(int cam)
 {
 	VideoCapture camera(cam);
-	
+	cout << "In takePictureUSB." << endl;
 	if (!camera.isOpened()){
 		cout << "cannot open camera!" << endl;
 		return nullptr;
 	}
+	cout << "After open" << endl;
 	Mat cameraFrame;
 	camera.read(cameraFrame);
-	
-	return GPIOLibrary::convertMatToString(cameraFrame);
+	cout << "after taking picture" << endl;
+	camera.release();
+	return convertMatToString(cameraFrame);
 }
 
 //creates a string out of a cv::Mat matrix

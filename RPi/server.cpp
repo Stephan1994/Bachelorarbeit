@@ -68,24 +68,32 @@ bool handleRequest(string command, string value)
 			SendeKommando(handler.RobotMessage, answer);
 		}
 		else{
+			cout << "Splitted Message is needed!" << endl;
 			int parts = 0, part = 1;
 			while (answerValue.length() >= ML-200){
+				//cout << "Length: " << answerValue.length() << endl;
 				std::fill(answer, answer + sizeof(answer)/sizeof(answer[0]), 0);
 				int writtenValueChars = ProtocolLibrary::createSplittedMessage(answer, command, answerValue, false, parts, part);
-				answerValue = answerValue.substr(writtenValueChars-1);
+				answerValue = answerValue.substr(writtenValueChars);
 				if (parts == 0){
-					char partsNr[5];
+					char partsNr[10];
+					std::fill(partsNr, partsNr + sizeof(partsNr)/sizeof(partsNr[0]), 0);
 					ProtocolLibrary::extractHeaderFieldValue(answer, partsNr, (char *)"parts");
 					sscanf(partsNr, "%d", &parts);
+					cout << "PartsStr: " << partsNr << "PartsInt: " << parts << endl;
 				}
+				//cout << "Vor SendeKommando in Splitted Message!" << endl;
 				SendeKommando(handler.RobotMessage, answer);
 				part++;
 				usleep(10);
 			}
+			cout << "After While" << endl;
 			if (answerValue.length() >= 0){
 				std::fill(answer, answer + sizeof(answer)/sizeof(answer[0]), 0);
 				ProtocolLibrary::createSplittedMessage(answer, command, answerValue, false, parts, part);
+				cout << "After creating last message!" << endl;
 				SendeKommando(handler.RobotMessage, answer);
+				cout << "After sending last message!" << endl;
 			}
 		}		
 			
