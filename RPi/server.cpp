@@ -1,24 +1,14 @@
 #include <iostream>
 #include <iomanip>
+#include <thread>
 #include "RobotHandler.h"
 #include "Netzwerk/ProzessPi.h"
 #include "ProtocolLibrary.h"
-
-//MessageLength
-//#define ML 1056
 
 using std::cout;
 using std::endl;
 
 using namespace std;
-
-/*struct Message{
-	Message() : transferFailure(false), request(true) {}
-	bool transferFailure;
-	bool request;
-	string command;
-	string value;
-};*/
 
 bool handleRequest(string command, string value);
 bool handleAnswer(string command, string value);
@@ -30,10 +20,9 @@ int main()
 	
 	while(true)
 	{
-		//handleRequest("camera", "test");
-		printf("Warte auf Kommando");
+		printf("Warte auf Kommando\n");
 		EmpfangeRobotKommando(recvdValue);
-		cout << "Value received: " << recvdValue << endl;
+		
 		string recvdString(recvdValue);
 		ProtocolLibrary::Message message;
 		message = ProtocolLibrary::extractHeader(recvdValue);
@@ -51,6 +40,8 @@ int main()
 				messageHandled = handleRequest(message.command, message.value);
 			else
 				messageHandled = handleAnswer(message.command, message.value);
+			
+			if (messageHandled == false){}
 		}
 	}
 	
@@ -71,7 +62,7 @@ bool handleRequest(string command, string value)
 			cout << "Splitted Message is needed!" << endl;
 			int parts = 0, part = 1;
 			while (answerValue.length() >= ML-200){
-				//cout << "Length: " << answerValue.length() << endl;
+
 				std::fill(answer, answer + sizeof(answer)/sizeof(answer[0]), 0);
 				int writtenValueChars = ProtocolLibrary::createSplittedMessage(answer, command, answerValue, false, parts, part);
 				answerValue = answerValue.substr(writtenValueChars);
@@ -82,10 +73,10 @@ bool handleRequest(string command, string value)
 					sscanf(partsNr, "%d", &parts);
 					cout << "PartsStr: " << partsNr << "PartsInt: " << parts << endl;
 				}
-				//cout << "Vor SendeKommando in Splitted Message!" << endl;
+
 				SendeKommando(handler.RobotMessage, answer);
 				part++;
-				usleep(10);
+				std::this_thread::sleep_for(std::chrono::microseconds(10));
 			}
 			cout << "After While" << endl;
 			if (answerValue.length() >= 0){
@@ -101,6 +92,7 @@ bool handleRequest(string command, string value)
 	else
 	{
 		cout << "This command is unknown." << endl;
+		return false;
 	}
 	return true;
 }

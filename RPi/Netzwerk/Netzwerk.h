@@ -2,31 +2,15 @@
  * Funktionen die hier erreicht werden sollen:
  * 
  * 	-	Erstellung eines Servers
- * 	-	Erstellung eines Clients 
  * 	-	Herstellen einer Verbindung
  * 	-	Überwachung einer Verbindung
  * 	-	Senden von Daten
  * 	-	Empfangen von Daten
- * 	-	Bereitstellen einer API um Funktionen einfach anzubieten
  * 
  * */
 #include <stdio.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <pthread.h>
 
-
-
-#define BUFSIZ 16384
+#define BUFFERSIZE 16384
 
 struct ThreadUebergabe
 {
@@ -37,7 +21,7 @@ struct ThreadUebergabe
 
 FILE *Log;
 volatile sig_atomic_t a;
- int debug; 
+int debug; 
 int PapaPID;
 int ErrorCounter = 0;
 int flag_stop = 0;

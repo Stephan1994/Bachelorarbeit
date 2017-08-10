@@ -2,7 +2,7 @@
 #define RPI_RobotHandler_H
 
 #include <string>
-#include <string.h>
+#include <cstring>
 using std::string;
 #include <iostream>
 #include <map>

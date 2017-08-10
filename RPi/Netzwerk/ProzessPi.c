@@ -1,5 +1,12 @@
 #include "ProzessPi.h"
 
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <stdlib.h>
+
 #if defined(__arm__)
 int fd[2]; // Pipe für ADC Thread & Speicher-Thread
 int PipeStattFile[2];
@@ -36,7 +43,6 @@ char WerteBuffer[100000];
 int Werte[10000];
 char KonfBuffer[20];
 uint8_t testmosi[8][3];
-volatile sig_atomic_t GlobalFlag;
 int bib_pid;
 int status;
 FILE *fd_senden;
@@ -48,39 +54,25 @@ struct I2C_Liste *I2C_Liste_Anfang;
 
 void sig_handler(int signo)
 {
-  if(signo == SIGUSR1)
+	if(signo == SIGUSR1)
 	{
 		Flag_ZuP=1;
 		return;
 	}
 	if(signo == SIGUSR2)
 	{
-		if(Flag_Start == 0)
-		{
-	//		Flag_Start=1;
-//			Flag_Stop=0;
-		return;
-		}
-	//		Flag_Start=0;
-//			Flag_Stop=1;
 		return;
 	}
 		
- if(signo == SIGPIPE)
- {
-	
-	//exit(1);
-	if(Flag_Done == 0)
+	if(signo == SIGPIPE)
 	{
-		printf("\n Client tot? Davon erhole ich mich nicht mehr! Versuche einen Neustart! \n");
-		done();
-		Flag_Done = 1;
-	//	printf("Flag_Done wurde 1 gesetzt!\n");
+		if(Flag_Done == 0)
+		{
+			printf("\n Client tot? Davon erhole ich mich nicht mehr! Versuche einen Neustart! \n");
+			done();
+			Flag_Done = 1;
+		}
 	}
-	
-
-//	exit(1);
- }
  
 }
 
@@ -120,22 +112,26 @@ int init(char *IP,char *PORT){
 	fd=fopen("/etc/issue","r");
 	char tbuf[9];
 	int t;
+	
 	for(t=0;t<9;t++)
 	{
 		tbuf[t]=fgetc(fd);
 	}
-			if(strncmp(tbuf,"Raspbian",3)==0)
-			{
-				Flag_RPi = 1;
-				strcpy(Tempbuf,"Server");
-				Tempbuf[6] = '\0';
-			}
-			else
-			{
-				strcpy(Tempbuf,"Client");
-				Tempbuf[6] = '\0';
-			}
+	
+	if(strncmp(tbuf,"Raspbian",3)==0)
+	{
+		Flag_RPi = 1;
+		strcpy(Tempbuf,"Server");
+		Tempbuf[6] = '\0';
+	}
+	else
+	{
+		strcpy(Tempbuf,"Client");
+		Tempbuf[6] = '\0';
+	}
+	
 	fclose(fd);
+	
 	switch(bib_pid=fork()){
 	case -1: 
 		
@@ -143,7 +139,7 @@ int init(char *IP,char *PORT){
 	
 	case 0:
 			
-            			printf("Get current working directory..\n");
+			printf("Get current working directory..\n");
             getcwd(wd,sizeof(wd));   
 			if ( access("Netzwerk.out", F_OK) != -1)
 			{
@@ -154,81 +150,56 @@ int init(char *IP,char *PORT){
 			{
 				printf("Netzwerk.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
 				strcat(wd,"/Netzwerk/Netzwerk.out");
-			}  
+			}
 
-          //  sprintf(wd,"/home/theo/Schreibtisch/MasterArbeit/Programmierung/Laptop/ProzessStation");
             printf("Das Verzeichnis ist -->%s<--",wd);
-
 
             execlp(wd,"noob", Tempbuf,IP, PORT,NULL);
 			perror("execlp");	
 	
-			printf("\n\n\n\n\nHier könnte Ihre Werbung stehen!\n\n\n\n\n\n");
-	
 	break;	  
 	default: 
-			//printf("	Testprogramm gestartet \n");
+
             if((fd_senden = fopen("/tmp/PtoTCP","w"))==0)
 			{
 				printf("Testprogramm meldet für PtoSTCP fopen: ");
 				perror(NULL);
 				printf("\n");
 			}
-
-			
-			
-			//fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
-			//fflush(fd_senden);
-            //kill(bib_pid,SIGUSR1);
 	
             if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
 			{
 				printf("Testprogramm meldet für TCPStoP fopen: ");
 				perror(NULL);
 				printf("\n");
-			}
-			
-		
-			
+			}			
 	}
-	//printf("	Hier ist der Anfang vom Ende \n");
-	
-	//fgets(Tempbuf,14,fd_empfangen);
-	
-	//read(fileno(fd_empfangen),Tempbuf,13);
-	//printf("		und hier das Ende! \n");
-	//printf("\n %s \n",Tempbuf);
-	
-	
-	
-			fd_set_blocking(fileno(fd_senden),0);
-			
-			
+
+	fd_set_blocking(fileno(fd_senden),0);
+
 	return 1;
 }
+
 void done()
 {
-	
-	kill(bib_pid,SIGUSR1);
 	unlink("/tmp/TCPtoP");
 	unlink("/tmp/PtoTCP");
-	printf("done()!\n");
-//	printf("Habe Netzwerk ein Signal zum Beenden geschickt! \n");
-	//wait(&status);	
-//	exit(1);	
+	printf("done()!\n");	
 }
 
+//sends a message with following protocol in the PtoTCP-Pipe
+//Protocol(without "): "Length of Message after first comma","command from parameter","Value from parameter";
 int SendeKommando(char *Kommando, char* Wert)
 {
 	int len = (int)strlen(Kommando) + (int)strlen(Wert) + 2;
-  //  printf("Length: %d\n", len);
-		if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
-		{
-			return 0;
-		}
-		fflush(fd_senden);
-		
-		return 1;
+
+	if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
+	{
+		return 0;
+	}
+	fflush(fd_senden);
+	
+	return 1;
 }
 
 void ErstelleListe_I2C( )
@@ -474,18 +445,22 @@ void I2C_printListe()
 	
 }
 
+//reads messages from TCPtoP-Pipe and writes it to the value parameter
 int EmpfangeRobotKommando(char* value)
 {
 	int i = 0, j = 0;
-//	int filePosition = ftell(fd_empfangen);
-//    printf("EmpfangeKommando: vor Kommando erkennen\n");
     char lengthArray[10];
 	memset(lengthArray, 0, 10);
-    int ch;
+    int ch, errorCount = 0;
+	
+	//extracting the length of this message
 	while(i < 10 && (ch=fgetc(fd_empfangen)) != ','){
         if (ch == EOF){
             if (ferror(fd_empfangen))
                 clearerr(fd_empfangen);
+			if (errorCount == 10)
+				return -1;
+			errorCount++;
             continue;
         }
         
@@ -494,21 +469,24 @@ int EmpfangeRobotKommando(char* value)
 
     };
     lengthArray[i] = '\0';
-    int length = 0;
     
+    //save the length in int-variable
+    int length = 0;
     if(sscanf(lengthArray, "%d", &length) < 1){
         printf("failure while reading \n");
         return -1;
     }
-    //printf ("Length: %d", length);
 
     char buffer[length];
     memset(buffer, 0, (size_t)length);
-    i = 0;
-    printf("Vor in Buffer schreiben.\n");
+    i = 0, errorCount = 0;
+    //reading message into buffer
     while(i < length){
         if ((ch = fgetc(fd_empfangen)) == EOF ){
             clearerr(fd_empfangen);
+			if (errorCount == 10)
+				return -1;
+			errorCount++;
             continue;
         }
         
@@ -517,14 +495,17 @@ int EmpfangeRobotKommando(char* value)
     }
     i--;
     buffer[i]='\0';
-    //printf("Nach in Buffer schreiben. Buffer: %s\n", buffer);
+    
+    //extracting command from value
     while(buffer[j] != ',' && j < i){
         Kommando[j] = buffer[j];
         j++;
     };
     Kommando[j] = '\0';
+    
+    //copy value from buffer to parameter
     strncpy(value, &buffer[j+1], strlen(buffer) - (j+1));
-    //printf("writing buffer is ready\n");
+	
     return 0;
 }
 
