@@ -17,38 +17,37 @@ using std::to_string;
 
 //baseclass for robots. Should be the parent of future robots
 
-Robot::Robot()
-{
+Robot::Robot() {
     strncpy(RobotMessage, "Robot", sizeof(RobotMessage));
-	cout << "RobotMessage: " << RobotMessage << endl;
+    cout << "RobotMessage: " << RobotMessage << endl;
 }
 
 Robot::~Robot() = default;
 
-bool Robot::connect(string ip)
-{
+bool Robot::connect(string ip) {
     //convert ip string to char*
     char ipArray[16];
     strncpy(ipArray, ip.c_str(), sizeof(ipArray));
     ipArray[sizeof(ipArray) - 1] = 0;
-	//convert port string to char*
-	string portstring = to_string(5001);
+    //convert port string to char*
+    string portstring = to_string(5001);
     char portArray[5];
     strncpy(portArray, portstring.c_str(), sizeof(portArray));
     portArray[sizeof(portArray) - 1] = 0;
-	cout << "RobotMessage: " << RobotMessage << endl;
-	//connect to the robot with help of extern Netzwerk-Library
+    cout << "RobotMessage: " << RobotMessage << endl;
+    //connect to the robot with help of extern Netzwerk-Library
     init(ipArray, portArray);
-	
+
 
     //ToDo maybe get ipaddress
-	char message[ML];
-	if (!ProtocolLibrary::createMessage(message, "connect", "IP"))
+    char message[ML];
+    if (!ProtocolLibrary::createMessage(message, "connect", "IP"))
         return false;
 
     SendeKommando(RobotMessage, message);
 
     listener.initListening();
+
     future<string> answerFuture = listener.addListener("connect");
 
     string answer = answerFuture.get();
@@ -56,81 +55,116 @@ bool Robot::connect(string ip)
     return answer == "connected";
 }
 
-bool Robot::closeConnection()
-{
+bool Robot::closeConnection() {
     char message[ML];
     if (ProtocolLibrary::createMessage(message, "disconnect", "IP"))
         SendeKommando(RobotMessage, message);
 
     future<string> answerFuture = listener.addListener("disconnect");
     string answer = answerFuture.get();
-    if (answer == "disconnected"){
+    if (answer == "disconnected") {
         listener.stopListening();
         done();
         return true;
     }
     return false;
 }
-/*
-bool Robot::createMessage(char* out, string command, string value, bool request)
-{
-    string header = createHeader(request, command, false, 0);
-    if (header.length() + 18 + value.length() >= ML){
-        return false;
-    }
 
-    string message = header + "message::" + value + "::message";
+bool Robot::forward(int speed) {
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "forward", to_string(speed)))
+        SendeKommando(RobotMessage, message);
 
-    strncpy(out, message.c_str(), message.length());
-    out[message.length()] = 0;
-    return true;
+    future<string> answerFuture = listener.addListener("forward");
+    string answer = answerFuture.get();
+
+    return answer == "forwarded";
 }
 
-string Robot::createHeader(bool request, string command, bool parted, int parts, int partnr)
-{
-    string header = "header::";
-    if (request)
-        header += "type: request,";
-    else
-        header += "type: answer,";
-    header += "command: " + command;
-    if (parted){
-        header += ", parted: yes, ";
-        header += "partnr: " + to_string(partnr);
-        header += ", parts: " + to_string(parts);
-    }
-    header += "::header";
+valarray<valarray<valarray<int>>> Robot::getPicture(int camera) {
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "picture", to_string(camera)))
+        SendeKommando(RobotMessage, message);
 
-    return header;
+    future<string> answerFuture = listener.addListener("picture");
+    string answer = answerFuture.get();
+
+    cout << "after receiving picture." << endl;
+
+    //cv::Mat dataMat;
+    //cv::FileStorage fs(answer, cv::FileStorage::READ + cv::FileStorage::MEMORY);
+    //fs["pic"] >> dataMat;
+
+    //cout << "after transfer to Mat" << endl;
+
+    //std::vector<unsigned char> vectordata(answer.begin(), answer.end());
+
+    //cv::Mat dataMat(vectordata, true);
+
+    //cv::Mat picMat(cv::imdecode(dataMat,1));
+
+    //cout << "Height: " << picMat.rows << " Width: " << picMat.cols << endl;
+
+    //cv::imwrite("test.jpg", picMat);
+
+    return Robot::convertStringToMat(answer);
 }
 
-int Robot::createSplittedMessage(char* out, string command, string value, bool request, int part, int parts)
-{
-    string header;
-    int overhead;
-    if (parts == 0)
-    {
-        auto estimatedParts = (int) ceil(value.length() / (ML - (18 + 76)));
-        header = Robot::createHeader(request, command, true, estimatedParts, part);
-        cout << header.length();
-        overhead = (int) header.length() + 18;
-        parts = (int) ceil(value.length() / (ML-overhead));
-    }
-    header = Robot::createHeader(request, command, true, parts, part);
-    overhead = (int) header.length() + 18;
-    string valuePart = value.substr(0, (unsigned long) (ML - overhead - 1));
-    string message = header + "message::" + valuePart + "::message";
-
-    strncpy(out, message.c_str(), message.length());
-    out[message.length()] = 0;
-    return (int) valuePart.length();
+valarray<valarray<valarray<int>>> Robot::getVideo(int camera) {
+    return valarray<valarray<valarray<int>>>();
 }
-*/
-void Robot::forward(int speed)
-{
-	char message[ML];
-	if (ProtocolLibrary::createMessage(message, "forward", to_string(speed)))
-    	SendeKommando(RobotMessage, message);
 
+valarray<valarray<valarray<int>>> Robot::convertStringToMat(string s) {
+    int i = 0;
+    string colStr;
+    while (s[i] != 'x') {
+        colStr += s[i];
+        i++;
+    }
+    int cols = stoi(colStr);
+    cout << "Nach cols: " << cols << endl;
+    string rowStr;
+    i++;
+    while (s[i] != '|') {
+        rowStr += s[i];
+        i++;
+    }
+    int rows = stoi(rowStr);
+    cout << "Nach rows: " << rows << endl;
 
+    int row = 0, col = 0;
+    i++;
+    valarray<valarray<valarray<int>>> array((size_t) cols);
+    for (int j = 0; j < cols; j++) {
+        array[j].resize((size_t) rows);
+        for (int k = 0; k < rows; k++) {
+            array[j][k].resize((size_t) 3);
+        }
+    }
+
+    int rgb = 0;
+    while (s[i] != 'e' && s[i + 1] != 'n' && s[i + 2] != 'd' && i < ((int)(s.length()) - 3)) {
+        while (s[i] != '|') {
+            if (i == 8198)
+                cout << "test reached" << endl;
+            if (s[i] == '(') {
+                rgb = 0;
+            } else if (s[i] == ')') {
+                col++;
+            } else {
+                string number;
+                while (s[i] != ',') {
+                    number += s[i];
+                    i++;
+                }
+                array[col][row][rgb] = stoi(number);
+                rgb++;
+            }
+            i++;
+        }
+        row++;
+        col = 0;
+        i++;
+    }
+    return array;
 }

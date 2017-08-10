@@ -10,6 +10,10 @@ int main() {
     cout << "connected" << endl;
 	rob.forward(100);
 	cout << "forwarded" << endl;
+
+    valarray<valarray<valarray<int>>> pic;
+    pic = rob.getPicture();
+    //cout << pic << endl;
     rob.closeConnection();
     return 0;
 }

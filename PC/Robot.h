@@ -7,8 +7,13 @@
 #include <string>
 using std::string;
 
+#include <valarray>
+using std::valarray;
+
 #include "MessageListener.h"
 #define PC_ROBOT_H
+
+#include <opencv2/opencv.hpp>
 
 
 class Robot {
@@ -22,7 +27,7 @@ public:
 	virtual bool closeConnection();
 
     //motor
-    virtual void forward(int speed);
+    virtual bool forward(int speed);
 //    virtual void backward(int speed);
 //    virtual void setSingleMotorSpeed(int motor, int speed);
 //    virtual void setCurveSpeed(int leftSpeed, int rightSpeed);
@@ -38,8 +43,8 @@ public:
 //    virtual void setLED(int led, bool state);
 
     //camera
-//    virtual int getPicture(int camera = 0);
-//    virtual int getVideo(int camera = 0);
+    virtual valarray<valarray<valarray<int>>> getPicture(int camera = 0);
+    virtual valarray<valarray<valarray<int>>> getVideo(int camera = 0);
 
     //audio
 //    virtual void playSound(string filePath);
@@ -58,6 +63,7 @@ private:
     int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);*/
 	char RobotMessage[6];
     MessageListener listener;
+    static valarray<valarray<valarray<int>>> convertStringToMat(string s);
 };
 
 
