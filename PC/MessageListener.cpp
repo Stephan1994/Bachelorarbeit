@@ -39,16 +39,11 @@ void MessageListener::listening() {
             std::fill(recvdValue, recvdValue + 10000, 0);
             //get new message
             EmpfangeRobotKommando(recvdValue);
+
             //convert it to string
             string recvdString(recvdValue);
-            cout << "RecvdString: " << recvdString << endl;
             ProtocolLibrary::Message mes = ProtocolLibrary::extractHeader(recvdString);
-            if (mes.command == "disconnect")
-                cout << "disconnect came" << endl;
-            if (mes.part == 487){
-                cout << "fast finished" << endl;
-            }
-            cout << "After extractHeader." << endl;
+
             //test if catched message is a splitted
             if (mes.parted && !mes.transferFailure){
                 //add to buffer if nothing exists there until now
@@ -111,7 +106,6 @@ void MessageListener::listening() {
                 }
             }
         }
-        cout << "Reading Kommando is ready.\n" << endl;
     }
 }
 
@@ -127,51 +121,7 @@ future<string> MessageListener::addListener(string command){
 
     return listeners.back().prom.get_future();
 }
-/*
-//extracts information from package to struct Message and tests for transfer failures
-MessageListener::Message MessageListener::extractHeader(string value)
-{
-    MessageListener::Message mes;
-    size_t pos = value.find("::header");
-    string header = value.substr(value.find("header::")+8, pos);
 
-    string headerField, fieldType, fieldValue;
-    size_t fieldPos;
-    while((pos = header.find(',')) != string::npos) {
-        headerField = header.substr(0, pos);
-        fieldPos = headerField.find(':');
-        fieldType = headerField.substr(0, fieldPos);
-        fieldValue = headerField.substr(fieldPos + 1);
-
-        if (fieldType == "type") {
-            mes.request = (fieldValue == "request");
-        } else if (fieldType == "command") {
-            mes.command = fieldValue;
-        } else if (fieldType == "parted") {
-            mes.parted = (fieldValue == "yes");
-        } else if (fieldType == "parts") {
-            mes.parts = stoi(fieldValue);
-        } else if (fieldType == "part") {
-            mes.part = stoi(fieldValue);
-        } else {
-            mes.transferFailure = true;
-            break;
-        }
-
-        header = header.substr(pos+1);
-    }
-    value = value.substr(pos + 8);
-    try {
-        mes.value = value.substr(value.find("message::") + 9, value.find("::message"));
-    } catch (...) {
-        mes.transferFailure = true;
-    }
-
-
-
-    return mes;
-}
-*/
 //starts the listening Thread, now commands can be received
 void MessageListener::initListening() {
     listeningThread = thread(&MessageListener::listening, this);

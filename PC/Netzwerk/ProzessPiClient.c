@@ -1,4 +1,12 @@
+
 #include "ProzessPiClient.h"
+
+#include <unistd.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <signal.h>
+#include <stdlib.h>
 
 uint64_t Delay_SPI=0;
 uint64_t Delay_I2C=0;
@@ -18,11 +26,6 @@ void sig_handler(int signo);
 
 int fd_set_blocking(int fd, int blocking) ;
 
-volatile int Flag_Start=0;
-volatile int Flag_Stop =0;
-volatile int Flag_Start_Messung=0;
-volatile int Flag_ZuP=0;
-volatile int Flag_RPi=0;
 volatile int Flag_Speichern=0;
 volatile int Flag_Done = 0;
 volatile int Pipe_Flag=1;
@@ -32,9 +35,6 @@ char Pfad[200];	// Problematisch, PATH_MAX konnte nicht eingebunden werden -> Fe
 char Kommando[21]; // Buffer für Kommandos
 char WerteBuffer[100000];
 int Werte[10000];
-char KonfBuffer[20];
-uint8_t testmosi[8][3];
-volatile sig_atomic_t GlobalFlag;
 int bib_pid;
 int status;
 FILE *fd_senden;
@@ -48,38 +48,22 @@ void sig_handler(int signo)
 {
   if(signo == SIGUSR1)
 	{
-		Flag_ZuP=1;
 		return;
 	}
 	if(signo == SIGUSR2)
 	{
-		if(Flag_Start == 0)
-		{
-	//		Flag_Start=1;
-//			Flag_Stop=0;
-		return;
-		}
-	//		Flag_Start=0;
-//			Flag_Stop=1;
 		return;
 	}
 		
  if(signo == SIGPIPE)
  {
-	
-	//exit(1);
 	if(Flag_Done == 0)
 	{
 		printf("\n Client tot? Davon erhole ich mich nicht mehr! Versuche einen Neustart! \n");
 		done();
 		Flag_Done = 1;
-	//	printf("Flag_Done wurde 1 gesetzt!\n");
 	}
-	
-
-//	exit(1);
  }
- 
 }
 
 int init(char *IP,char *PORT){
@@ -97,14 +81,13 @@ int init(char *IP,char *PORT){
 	}
 	unlink("/tmp/TCPtoP");
 	unlink("/tmp/PtoTCP");
-	
-	//if(mknod("/tmp/PtoS", S_IFIFO | 0666,0) < 0 )
+
 	if(mkfifo("/tmp/PtoTCP",0666))
 	{
 		perror(NULL);
 		return 0;
 	}
-	//if(mknod("/tmp/StoP", S_IFIFO | 0666,0) < 0 )
+
 	if(mkfifo("/tmp/TCPtoP",0666))
 	{
 		perror(NULL);
@@ -120,11 +103,10 @@ int init(char *IP,char *PORT){
 	int t;
 	for(t=0;t<9;t++)
 	{
-		tbuf[t]=fgetc(fd);
+		tbuf[t]=(char) fgetc(fd);
 	}
 			if(strncmp(tbuf,"Raspbian",3)==0)
 			{
-				Flag_RPi = 1;
 				strcpy(Tempbuf,"Server");
 				Tempbuf[6] = '\0';
 			}
@@ -140,89 +122,67 @@ int init(char *IP,char *PORT){
 			printf("\n \n Error beim Erstellen des Prozesses! \n \n"); return 0;
 	
 	case 0:
-			
-            			printf("Get current working directory..\n");
-            getcwd(wd,sizeof(wd));   
-			if ( access("NetzwerkClient.out", F_OK) != -1)
-			{
-				printf("NetzwerkClient.out is in current working directory!\n");
-				strcat(wd,"/NetzwerkClient.out");
-			}
-			else
-			{
-				printf("NetzwerkClient.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
-				strcat(wd,"/Netzwerk/NetzwerkClient.out");
-			}  
 
-          //  sprintf(wd,"/home/theo/Schreibtisch/MasterArbeit/Programmierung/Laptop/ProzessStation");
-            printf("Das Verzeichnis ist -->%s<--",wd);
+        printf("Get current working directory..\n");
+        getcwd(wd,sizeof(wd));
+        if ( access("NetzwerkClient.out", F_OK) != -1)
+        {
+            printf("NetzwerkClient.out is in current working directory!\n");
+            strcat(wd,"/NetzwerkClient.out");
+        }
+        else
+        {
+            printf("NetzwerkClient.out isn't in current working directory! Try it with the 'Netzwerk' folder.\n");
+            strcat(wd,"/Netzwerk/NetzwerkClient.out");
+        }
+
+        printf("Das Verzeichnis ist -->%s<--",wd);
 
 
-            execlp(wd,"noob", Tempbuf,IP, PORT,NULL);
-			perror("execlp");	
+        execlp(wd,"noob", Tempbuf,IP, PORT,NULL);
+        perror("execlp");
+
+	break;
+	default:
+
+        if((fd_senden = fopen("/tmp/PtoTCP","w"))==0)
+        {
+            printf("Testprogramm meldet für PtoSTCP fopen: ");
+            perror(NULL);
+            printf("\n");
+        }
 	
-			printf("\n\n\n\n\nHier könnte Ihre Werbung stehen!\n\n\n\n\n\n");
-	
-	break;	  
-	default: 
-			//printf("	Testprogramm gestartet \n");
-            if((fd_senden = fopen("/tmp/PtoTCP","w"))==0)
-			{
-				printf("Testprogramm meldet für PtoSTCP fopen: ");
-				perror(NULL);
-				printf("\n");
-			}
-
-			
-			
-			//fprintf(fd_senden,"Pfeifentest!\n");	// Testet die Pipe 
-			//fflush(fd_senden);
-            //kill(bib_pid,SIGUSR1);
-	
-            if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
-			{
-				printf("Testprogramm meldet für TCPStoP fopen: ");
-				perror(NULL);
-				printf("\n");
-			}
-			
-		
-			
+        if((fd_empfangen = fopen("/tmp/TCPtoP","r"))==0)
+        {
+            printf("Testprogramm meldet für TCPStoP fopen: ");
+            perror(NULL);
+            printf("\n");
+        }
 	}
-	//printf("	Hier ist der Anfang vom Ende \n");
-	
-	//fgets(Tempbuf,14,fd_empfangen);
-	
-	//read(fileno(fd_empfangen),Tempbuf,13);
-	//printf("		und hier das Ende! \n");
-	//printf("\n %s \n",Tempbuf);
 	
     fd_set_blocking(fileno(fd_senden),0);
 			
 	return 1;
 }
+
 void done()
 {
-	kill(bib_pid,SIGUSR2);
 	unlink("/tmp/TCPtoP");
 	unlink("/tmp/PtoTCP");
 	printf("done()!\n");
-//	printf("Habe Netzwerk ein Signal zum Beenden geschickt! \n");
-	//wait(&status);	
-//	exit(1);	
 }
 
 int SendeKommando(char *Kommando, char* Wert)
 {
     int len = (int)strlen(Kommando) + (int)strlen(Wert) + 2;
-    printf("Length: %d\n", len);
-		if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
-		{
-			return 0;
-		}
-		fflush(fd_senden);
-		
-		return 1;
+
+    if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
+    {
+        return 0;
+    }
+    fflush(fd_senden);
+
+    return 1;
 }
 
 void ErstelleListe_I2C( )
@@ -468,18 +428,22 @@ void I2C_printListe()
 	
 }
 
+//reading messages from TCPtoP-Pipe and writes it to the value parameter
 int EmpfangeRobotKommando(char* value)
 {
 	int i = 0, j = 0;
-//	int filePosition = ftell(fd_empfangen);
-//    printf("EmpfangeKommando: vor Kommando erkennen\n");
     char lengthArray[10];
 	memset(lengthArray, 0, 10);
-    int ch;
+    int ch, errorCount = 0;
+
+    //extracting the length of this message
 	while(i < 10 && (ch=fgetc(fd_empfangen)) != ','){
         if (ch == EOF){
             if (ferror(fd_empfangen))
                 clearerr(fd_empfangen);
+            if (errorCount == 10)
+                return -1;
+            errorCount++;
             continue;
         }
 
@@ -488,18 +452,18 @@ int EmpfangeRobotKommando(char* value)
 
     };
     lengthArray[i] = '\0';
-    int length = 0;
 
+    //save the length in int-variable
+    int length = 0;
     if(sscanf(lengthArray, "%d", &length) < 1){
         printf("failure while reading \n");
         return -1;
     }
-    //printf ("Length: %d", length);
 
     char buffer[length];
     memset(buffer, 0, (size_t)length);
     i = 0;
-    printf("Vor in Buffer schreiben.\n");
+    //reading message into buffer
     while(i < length){
         if ((ch = fgetc(fd_empfangen)) == EOF ){
             clearerr(fd_empfangen);
@@ -511,14 +475,17 @@ int EmpfangeRobotKommando(char* value)
     }
     i--;
     buffer[i]='\0';
-    //printf("Nach in Buffer schreiben. Buffer: %s\n", buffer);
+
+    //extracting Kommando from value
     while(buffer[j] != ',' && j < i){
         Kommando[j] = buffer[j];
         j++;
     };
     Kommando[j] = '\0';
+
+    //copy value from buffer to parameter
     strncpy(value, &buffer[j+1], strlen(buffer) - (j+1));
-    //printf("writing buffer is ready\n");
+
     return 0;
 }
 
@@ -553,7 +520,6 @@ int EmpfangeKommando()
 		
 	if(strncmp(Kommando,START,8)==0)
 	{
-		Flag_Start=1;
 		
 		if(pthread_mutex_trylock(&I2C_Konflock) == 0)
 		{

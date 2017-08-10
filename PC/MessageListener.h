@@ -18,16 +18,6 @@ using std::list;
 
 class MessageListener {
 private:
-   /* struct Message{
-        bool transferFailure{false};
-        bool request{true};
-        string command;
-        string value;
-        bool parted;
-        int parts;
-        int part;
-    };*/
-
     struct Listener{
         promise<string> prom;
         string requestedCommand;
@@ -49,7 +39,6 @@ private:
     bool stop = false;
 
     void listening();
-    //Message extractHeader(string value);
 
 public:
     future<string> addListener(string command);

@@ -1,10 +1,9 @@
-/*****************
- * 
- * 
- * 
- * gcc testmain.c -lbcm2835 -pthread
- * 
- * */
+/*
+ * ProzessPi dient zur Kommunikation zum NetzwerkClient-Prozess und zum Zugriff auf AD-Wandler über SPI oder I2C
+ * Gehört zur Masterarbeit von Theo Gabloffsky
+ * -> überarbeitet und verändert von Stephan Pöhland
+ */
+
 #ifdef __arm__
 #include <bcm2835.h>
 int fd[2]; // Pipe für ADC Thread & Speicher-Thread
@@ -22,24 +21,10 @@ int PipeStattFile[2]; // Pipe für Senden ohne Datei zu erzeugen
 #define AnzahlZeilenZumSenden_I 3
 
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/msg.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <stdint.h>
-#include <math.h>
-#include <time.h>
-#include <linux/limits.h>
+
 #include <pthread.h>
-
-
+#include <stdint.h>
+#include <stdio.h>
 
 
 
@@ -70,13 +55,6 @@ extern pthread_mutex_t SPI_Konflock;
 extern uint64_t Delay_SPI;
 extern uint64_t Delay_I2C;
 
-
-
-extern volatile int Flag_Start;
-extern volatile int Flag_Stop;
-extern volatile int Flag_Start_Messung;
-extern volatile int Flag_ZuP;
-extern volatile int Flag_RPi;
 extern volatile int Flag_Speichern;
 extern volatile int Flag_Done;
 extern volatile int Pipe_Flag;
@@ -97,11 +75,6 @@ extern char Pfad[200];	// Problematisch, PATH_MAX konnte nicht eingebunden werde
 extern char Kommando[21]; // Buffer für Kommandos
 extern char WerteBuffer[100000];
 extern int Werte[10000];
-extern char KonfBuffer[20];
-extern uint8_t testmosi[8][3];
-extern volatile sig_atomic_t GlobalFlag;
-extern int bib_pid;
-extern int status;
 extern FILE *fd_senden;
 extern FILE *fd_empfangen;
 
@@ -158,8 +131,6 @@ extern struct I2C_Liste{
 		
 		struct I2C_Liste *next;
 }*I2C_Liste_Anfang;
-
-//extern struct I2C_Liste *I2C_Liste_Anfang;
 
 #ifdef __cplusplus
 extern "C"{

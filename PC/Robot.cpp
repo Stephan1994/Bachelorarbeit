@@ -122,7 +122,6 @@ valarray<valarray<valarray<int>>> Robot::convertStringToMat(string s) {
         i++;
     }
     int cols = stoi(colStr);
-    cout << "Nach cols: " << cols << endl;
     string rowStr;
     i++;
     while (s[i] != '|') {
@@ -130,7 +129,6 @@ valarray<valarray<valarray<int>>> Robot::convertStringToMat(string s) {
         i++;
     }
     int rows = stoi(rowStr);
-    cout << "Nach rows: " << rows << endl;
 
     int row = 0, col = 0;
     i++;
@@ -145,8 +143,6 @@ valarray<valarray<valarray<int>>> Robot::convertStringToMat(string s) {
     int rgb = 0;
     while (s[i] != 'e' && s[i + 1] != 'n' && s[i + 2] != 'd' && i < ((int)(s.length()) - 3)) {
         while (s[i] != '|') {
-            if (i == 8198)
-                cout << "test reached" << endl;
             if (s[i] == '(') {
                 rgb = 0;
             } else if (s[i] == ')') {
