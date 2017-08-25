@@ -176,14 +176,19 @@ void *TCPtoP(void *TCPtoP_Struct) {
     char Buffer[BUFFERSIZE];
     int RecvTemp;
     int stop = 0;
+    long recvdBytes = 0;
 
     //getting max writesize for writing in Pipes
     int maxWrite = (int) pathconf("/tmp/TCPtoP", _PC_PIPE_BUF);
+    //printf("MaxWrite: %d\n", maxWrite);
 
     //loop for getting the messages from socket and writing it to Pipe
     while (stop == 0) {
         // receiving messages
         RecvTemp = (int) recv(hierhin->fd, Buffer, (size_t) (BUFFERSIZE - 1), 0);
+
+        recvdBytes += RecvTemp;
+        //printf("%d ", recvdBytes);
 
         //if there is something to read, that's smaller than max writesize
         if (RecvTemp > 0 && RecvTemp < maxWrite) {
@@ -216,7 +221,6 @@ void *TCPtoP(void *TCPtoP_Struct) {
             write(fd_ZuP, &Buffer[written], (size_t) (RecvTemp-written));
             fflush(hierhin->ZuP);
             //kill(PapaPID, SIGUSR1);
-
         }
 
         //waiting for the disconnected-message to end this thread  itself
@@ -233,8 +237,11 @@ void *TCPtoP(void *TCPtoP_Struct) {
             }
         }
 
+        if (recvdBytes > 3500000)
+            printf("%d ", recvdBytes);
         //reset Buffer
         memset(&Buffer[0], 0, BUFFERSIZE);
+        //perror("/tmp/TCPtoP");
 
     }
     printf("TCPtoP nähert sich dem Ende! \n");
@@ -339,19 +346,5 @@ void sig_handler(int signo) {
         sleep(1);
         exit(1);
     }
-
-}
-
-int fd_set_blocking(int fd, int blocking) {
-    /* Save the current flags */
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (flags == -1)
-        return 0;
-
-    if (blocking)
-        flags &= ~O_NONBLOCK;
-    else
-        flags |= O_NONBLOCK;
-    return fcntl(fd, F_SETFL, flags) != -1;
 }
 

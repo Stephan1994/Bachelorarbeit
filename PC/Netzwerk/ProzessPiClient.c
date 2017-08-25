@@ -473,6 +473,9 @@ int EmpfangeRobotKommando(char* value)
             continue;
         }
 
+       // if ((i%200) == 0)
+       //     printf("test");
+
         buffer[i] = (char)ch;
         i++;
     }
@@ -489,6 +492,7 @@ int EmpfangeRobotKommando(char* value)
     //copy value from buffer to parameter
     strncpy(value, &buffer[j+1], strlen(buffer) - (j+1));
 
+    //perror("/tmp/TCPtoP");
     return 0;
 }
 

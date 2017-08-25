@@ -44,20 +44,23 @@ void MessageListener::listening() {
             string recvdString(recvdValue);
             ProtocolLibrary::Message mes = ProtocolLibrary::extractHeader(recvdString);
 
-            //test if catched message is a splitted
+            if (mes.part == 480)
+                cout << mes.part << endl;
+            //test if catched message is splitted
             if (mes.parted && !mes.transferFailure){
                 //add to buffer if nothing exists there until now
                 if (partedNotFinished.empty()){
                     partedNotFinished.push_back(mes);
                 }
                 else{
-                    //go through the splitted messages that been catched
+                    //go through the splitted messages that have been catched
                     auto parted_it = partedNotFinished.begin();
                     bool inserted = false;
                     while (parted_it != partedNotFinished.end()){
                         if ((*parted_it).command == mes.command){
                             //add value und change actual part number to the message that fits
-                            if((*parted_it).parts == mes.parts && (*parted_it).part == mes.part - 1){
+                            if((*parted_it).part == mes.part - 1){
+                                (*parted_it).parts = mes.parts;
                                 (*parted_it).part = mes.part;
                                 (*parted_it).value += mes.value;
                                 //if all parts were added, the message is added to incoming queue
