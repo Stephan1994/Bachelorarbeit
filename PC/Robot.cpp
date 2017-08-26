@@ -110,8 +110,76 @@ valarray<valarray<valarray<int>>> Robot::getPicture(int camera) {
     return Robot::convertStringToMat(answer);
 }
 
-valarray<valarray<valarray<int>>> Robot::getVideo(int camera) {
-    return valarray<valarray<valarray<int>>>();
+std::list<valarray<valarray<valarray<int>>>>* Robot::startVideo(int cols, int rows) {
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "startVideo", to_string(cols) + "x" + to_string(rows)))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("startVideo");
+    string answer = answerFuture.get();
+
+
+    videoThread = thread(&Robot::receiveVideo, this);
+
+    return &VideoBuffer;
+}
+
+bool Robot::stopVideo() {
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "stopVideo", ""))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("stopVideo");
+    string answer = answerFuture.get();
+
+    cout << "after getting answer for stopping video." << endl;
+    stopVideoThread = true;
+    videoThread.join();
+    VideoBuffer.clear();
+}
+
+void Robot::receiveVideo(){
+
+    while(!stopVideoThread){
+        future<string> answerFuture = listener.addListener("video");
+        string answer = answerFuture.get();
+
+        int i = 0;
+        string colStr;
+        while (answer[i] != 'x') {
+            colStr += answer[i];
+            i++;
+        }
+        int cols = stoi(colStr);
+        string rowStr;
+        i++;
+        while (answer[i] != '|') {
+            rowStr += answer[i];
+            i++;
+        }
+        int rows = stoi(rowStr);
+
+        valarray<valarray<valarray<int>>> array((size_t) cols);
+        try{
+            array = convertStringToMat(answer);
+        }catch (...){
+            cout << "received wrong formatted picture." << endl;
+            for (int j = 0; j < cols; j++) {
+                array[j].resize((size_t) rows);
+                for (int k = 0; k < rows; k++) {
+                    array[j][k].resize((size_t) 3, 0);
+                }
+            }
+        }
+
+        if (VideoBuffer.size() < 10){
+            VideoBuffer.push_back(array);
+        }
+        else{
+            VideoBuffer.pop_front();
+            VideoBuffer.push_back(array);
+        }
+    }
 }
 
 valarray<valarray<valarray<int>>> Robot::convertStringToMat(string s) {

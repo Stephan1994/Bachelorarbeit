@@ -15,11 +15,15 @@ using std::valarray;
 
 #include <opencv2/opencv.hpp>
 
+#include <thread>
+using std::thread;
+
 
 class Robot {
 public:
     enum SensorMode{ single, continous};
     Robot();
+	std::list<valarray<valarray<valarray<int>>>> VideoBuffer;
     virtual ~Robot();
  //   virtual void reset();
     //connect this PC with the Robot who has ip
@@ -44,7 +48,8 @@ public:
 
     //camera
     virtual valarray<valarray<valarray<int>>> getPicture(int camera = 0);
-    virtual valarray<valarray<valarray<int>>> getVideo(int camera = 0);
+    virtual std::list<valarray<valarray<valarray<int>>>>* startVideo(int rows, int cols);
+	virtual bool stopVideo();
 
     //audio
 //    virtual void playSound(string filePath);
@@ -63,6 +68,9 @@ private:
     int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);*/
 	char RobotMessage[6];
     MessageListener listener;
+	thread videoThread;
+	bool stopVideoThread = false;
+	void receiveVideo();
     static valarray<valarray<valarray<int>>> convertStringToMat(string s);
 };
 

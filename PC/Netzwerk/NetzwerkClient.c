@@ -237,8 +237,8 @@ void *TCPtoP(void *TCPtoP_Struct) {
             }
         }
 
-        if (recvdBytes > 3500000)
-            printf("%d ", recvdBytes);
+        //if (recvdBytes > 3500000)
+        //    printf("%d ", recvdBytes);
         //reset Buffer
         memset(&Buffer[0], 0, BUFFERSIZE);
         //perror("/tmp/TCPtoP");
