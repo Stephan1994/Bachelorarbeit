@@ -47,6 +47,8 @@ int bib_pid;
 int status;
 FILE *fd_senden;
 FILE *fd_empfangen;
+long BytesSent = 0;
+long BytesReallySent = 0;
 
 struct SPI_Wandler WandlerA,WandlerB;
 struct I2C_Liste *I2C_Liste_Anfang;
@@ -175,7 +177,7 @@ int init(char *IP,char *PORT){
 			}			
 	}
 
-	fd_set_blocking(fileno(fd_senden),0);
+	//fd_set_blocking(fileno(fd_senden),0);
 
 	return 1;
 }
@@ -193,12 +195,51 @@ int SendeKommando(char *Kommando, char* Wert)
 {
 	int len = (int)strlen(Kommando) + (int)strlen(Wert) + 2;
 
-	if(fprintf(fd_senden,"%d,%s,%s;\n",len,Kommando,Wert) == 0)
-	{
-		return 0;
-	}
-	fflush(fd_senden);
+	 //getting max writesize for writing in Pipes
+    int maxWrite = (int) pathconf("/tmp/TCPtoP", _PC_PIPE_BUF);
+    //printf("MaxWrite: %d\n", maxWrite);
+	char sendStr[len + 6];
+	snprintf(sendStr, len + 6, "%d,%s,%s;", len, Kommando, Wert);
+	len = (int) strlen(sendStr);
 	
+	BytesSent += len;
+	//printf("Bytes sent: %d ", BytesSent);
+	int fdNo_Senden = fileno(fd_senden);
+	if (len < maxWrite){
+		printf("in small write\n");
+		printf("%s\n", sendStr);
+		printf("Len: %d, strlen: %d\n", len, strlen(sendStr));
+		//if(fprintf(fd_senden,"%s",sendStr) == 0)
+		int written = 0;
+		if((written = write(fdNo_Senden, sendStr, len)) < 0)
+		{
+			perror("/tmp/PtoTCP");
+			return 0;
+		}
+		printf("Written: %d\n", written);
+		fflush(fd_senden);
+		BytesReallySent += len;
+	}
+	//if there is something to read, that's bigger than max writesize, the message have to be splitted
+	else{
+		int written = maxWrite;
+		
+		//write packages with a size of maxWriteSize to Pipe
+		while(written < len){
+			int tempBytes = write(fdNo_Senden, &sendStr[written-maxWrite], (size_t)maxWrite);
+			BytesReallySent += tempBytes;
+			//printf("this package: %d ", tempBytes);
+			if (tempBytes < 0)
+				perror("/tmp/PtoTCP");
+			written += maxWrite;
+		}
+		written -= maxWrite;
+		//rest of message sends here
+		BytesReallySent += write(fdNo_Senden, &sendStr[written], (size_t) (len-written));
+		fflush(fd_senden);
+		//perror("/tmp/PtoTCP");
+	}
+	//printf("Really sent: %d\n", BytesReallySent);
 	return 1;
 }
 

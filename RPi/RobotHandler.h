@@ -8,13 +8,14 @@ using std::string;
 #include <map>
 #include <functional>
 #include "Netzwerk/ProzessPi.h"
+#include "Camera.h"
 
 
 class RobotHandler {
 public:
     enum SensorMode{ single, continous};
 	std::map<string, std::function<string(string)>> RobotFunctions;
-    RobotHandler();
+    RobotHandler(MessageWriter *extWriter);
     virtual ~RobotHandler();
  //   virtual void reset();
 	virtual string connect(string value);
@@ -38,8 +39,9 @@ public:
 
     //camera
     virtual string getPicture(string camera = "0");
-    virtual string getVideo(string camera = 0);
-
+    virtual string startVideo(string camera = 0);
+	virtual string stopVideo(string camera = 0);
+	
     //audio
 //    virtual void playSound(string filePath);
 //    virtual int getMicrophone(int microphone, SensorMode mode = single);
@@ -56,6 +58,7 @@ public:
 	int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);
 	char RobotMessage[6];
 	void initFunctions();
+	Camera camera;
 };
 
 

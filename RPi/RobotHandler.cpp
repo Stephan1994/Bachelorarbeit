@@ -16,10 +16,13 @@ using std::map;
 using std::placeholders::_1;
 
 
-RobotHandler::RobotHandler()
+RobotHandler::RobotHandler(MessageWriter *extWriter)
+	:camera(extWriter)
 {
+	cout << "Test in Handler: " << extWriter->test << endl;
     strncpy(RobotMessage, "Robot", sizeof(RobotMessage));
 	initFunctions();
+	//camera = new Camera(extWriter);
 }        
 
 void RobotHandler::initFunctions()
@@ -30,7 +33,8 @@ void RobotHandler::initFunctions()
 			{"disconnect", std::bind(&RobotHandler::closeConnection, this, _1)},
 			{"forward", std::bind(&RobotHandler::forward, this, _1)},
 			{"picture", std::bind(&RobotHandler::getPicture, this, _1)},
-			{"video", std::bind(&RobotHandler::getVideo, this, _1)}
+			{"startVideo", std::bind(&RobotHandler::startVideo, this, _1)},
+			{"stopVideo", std::bind(&RobotHandler::stopVideo, this, _1)}
 		};
 }
 
@@ -45,6 +49,8 @@ string RobotHandler::connect(string value)
 string RobotHandler::closeConnection(string value)
 {
 	cout << "closeConnection called" << endl;
+	if (camera.actStreaming)
+		camera.stopStreaming(); 
 	return "disconnected";
 }
 
@@ -54,18 +60,38 @@ string RobotHandler::forward(string speed)
 	return "forwarded";
 }
 
-string RobotHandler::getPicture(string camera)
+string RobotHandler::getPicture(string cam)
 {
 	cout << "getPicture called!" << endl;
 
-	return GPIOLibrary::takePictureUSB(stoi(camera));
+	return camera.takePicture();
 }
 
-string RobotHandler::getVideo(string camera)
+string RobotHandler::startVideo(string resolution)
 {
-	GPIOLibrary::takePictureUSB(stoi(camera));
-	return 0;
+	int i = 0;
+	string colStr;
+	while (resolution[i] != 'x') {
+		colStr += resolution[i];
+		i++;
+	}
+	int cols = stoi(colStr);
+	string rowStr;
+	i++;
+	while (i < (int)resolution.length()) {
+		rowStr += resolution[i];
+		i++;
+	}
+	int rows = stoi(rowStr);
+	
+	camera.startStreaming(cols, rows);
+	return "started";
 }
 
+string RobotHandler::stopVideo(string cam)
+{
+	camera.stopStreaming();
+	return "stoped";
+}
 
 

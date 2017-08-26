@@ -86,6 +86,8 @@ extern int bib_pid;
 extern int status;
 extern FILE *fd_senden;
 extern FILE *fd_empfangen;
+extern long BytesSent;
+extern long BytesReallySent;
 
 
 extern struct SPI_Wandler{

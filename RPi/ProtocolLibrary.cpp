@@ -7,7 +7,7 @@ using std::to_string;
 using std::cout;
 using std::endl;
 
-bool ProtocolLibrary::createMessage(char* out, string command, string value, bool request)
+bool ProtocolLibrary::createMessage(char *out, string command, string value, bool request)
 {
 	string header = ProtocolLibrary::createHeader(request, command, false, 0);
 	if (header.length() + 18 + value.length() >= ML){
@@ -16,6 +16,7 @@ bool ProtocolLibrary::createMessage(char* out, string command, string value, boo
 		
 	string message = header + "message::" + value + "::message";
 
+	//out = &message;
 	strncpy(out, message.c_str(), message.length());
 	out[message.length()] = 0;
 	return true;
@@ -42,13 +43,13 @@ string ProtocolLibrary::createHeader(bool request, string command, bool parted, 
 	return header;
 }
 
-int ProtocolLibrary::createSplittedMessage(char* out, string command, string value, bool request, int parts, int part)
+int ProtocolLibrary::createSplittedMessage(char *out, string command, string value, bool request, int parts, int part)
 {
 	string header;
 	int overhead;
 	if (parts == 0)
 	{
-		auto estimatedParts = (int) ceil((double)value.length() / (double)(ML - (18 + 76)));
+		auto estimatedParts = (int) ceil((double)value.length() / (double)(ML - (18 + 76)));		
 		header = ProtocolLibrary::createHeader(request, command, true, estimatedParts, part);
 		overhead = (int) header.length() + 18;
 		parts = (int) ceil((double)value.length() / (double)(ML-overhead));
@@ -61,11 +62,16 @@ int ProtocolLibrary::createSplittedMessage(char* out, string command, string val
 		valuePart = value;
 	else
 		valuePart = value.substr(0, (unsigned long) (ML - overhead - 1));
+	
+	if (part == parts && (int) value.length() > (ML - overhead - 1)){
+		header = ProtocolLibrary::createHeader(request, command, true, parts+1, part);
+	}
 	string message = header + "message::" + valuePart + "::message";
-
-	cout << message << endl;
+	//out = &message;
+	//cout << message << endl;
 	strncpy(out, message.c_str(), message.length());
 	out[message.length()] = 0;
+	//cout << "end of createing splitted message" << endl;
 	return (int) valuePart.length();
 }
 

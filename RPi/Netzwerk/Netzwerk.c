@@ -331,23 +331,62 @@ void *PtoTCP(void *PtoTCP_Struct)
 	hierhin = (struct ThreadUebergabe *)PtoTCP_Struct;
 	char Buffer[BUFFERSIZE];
 	int len,len_send = 0;	
+	int sentBytes = 0;
+	fd_set set;
 	
 	//loop to read messages from PtoTCP-Pipe and write it into socket
 	while(flag_stop == 0)
 	{	
 		usleep(100);
 
-		if(fgets(Buffer,BUFFERSIZE,hierhin->VonP) != NULL)
+		
+		struct timeval timeout = {1,0};
+		
+		FD_ZERO(&set);
+		FD_SET(fileno(hierhin->VonP), &set);
+		
+		//printf("vor select\n");
+		int sel = select(FD_SETSIZE, &set, NULL, NULL, &timeout);
+		if (sel == 1)
 		{
-			len = (int) strlen(Buffer) - 1;
-			int tempLen = len;
-			while((len_send = send(hierhin->fd, &Buffer[len_send], (size_t) tempLen, 0) < tempLen))
-			{ 	
-					tempLen -= len_send;
+			
+			//printf("vor lesen\n");
+			int c = 0, counter = 0;
+			
+			//printf("Aus der Pipe gelesen: ");
+			while((c = fgetc(hierhin->VonP)) != ';' && counter < BUFFERSIZE - 1)
+			{
+				//printf("%c", c);
+				Buffer[counter] = c;
+				counter++;
 			}
+			Buffer[counter] = c;
+			Buffer[counter+1] = '\0';
+			//printf("%c\n", c);
+		
+			//if(fgets(Buffer,BUFFERSIZE,hierhin->VonP) != NULL)
+			//if(read(fileno(hierhin->VonP), Buffer, BUFFERSIZE) > 0)
+			//{
+			//printf("nach lesen\n");
+			len = (int) strlen(Buffer);
+			int tempLen = len;
+			len_send = send(hierhin->fd, &Buffer[0], (size_t) tempLen, 0);
+			int errorCount = 0;
+			while(len_send < tempLen)
+			{ 	
+				if (errorCount > 10)
+					break;
+				tempLen -= len_send;
+				printf("partedSent\n");
+				len_send = send(hierhin->fd, &Buffer[len_send], (size_t) tempLen, 0);
+				errorCount++;
+			}
+			if (errorCount > 10)
+				continue;
+			sentBytes += len;
 			
 			//printf("Aus der Pipe geholt und ans Socket gesendet: %s \n",Buffer);
-			
+			//printf("Test: len: %d sentLen: %d\n", len, len_send);
 			//waiting for the disconnected-value to end this thread and the TCPtoP-Thread
             //smaller than 400 to avoid large values that could not be disconnect
 			if (len < 400){
@@ -361,7 +400,16 @@ void *PtoTCP(void *PtoTCP_Struct)
 					flag_stop = 1;
 				}
 			}
-		} 
+			//printf("Bytes sent in Netzwerk: %d\n", sentBytes);
+			//perror("/tmp/PtoTCP");
+			//}
+		}
+		else if (sel == 0){
+			printf("Timeout\n");
+		}
+		else{
+			printf("Error\n");
+		}
 	}
 	
 	printf("PtoTCP nähert sich dem Ende! \n");

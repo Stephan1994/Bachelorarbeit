@@ -11,9 +11,9 @@ using cv::Vec3b;
 //takes a picture from usb-webcam and returns a string containing the information
 string GPIOLibrary::takePictureUSB(int cam)
 {
-	VideoCapture camera(cam);
+	VideoCapture camera;
 	cout << "In takePictureUSB." << endl;
-	if (!camera.isOpened()){
+	if (!camera.open(cam)){
 		cout << "cannot open camera!" << endl;
 		return nullptr;
 	}
