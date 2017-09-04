@@ -31,9 +31,9 @@ private:
 
 public:
 	bool actStreaming = false;
-	Camera();
-	Camera(MessageWriter *extWriter);
+
 	~Camera();
+	bool initCamera(MessageWriter *extWriter, int camNr);
     bool startStreaming(int cols, int rows);
 	bool stopStreaming();
 	string takePicture();

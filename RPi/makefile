@@ -1,8 +1,8 @@
 CC = g++
 CFLAGS = -Wall -std=c++11 `pkg-config --cflags opencv`
-LDFLAGS = -lpthread -lbcm2835 `pkg-config --libs opencv`
+LDFLAGS = -lpthread -lbcm2835 `pkg-config --libs opencv` -lwiringPi
 
-OBJ = server.o RobotHandler.o GPIOLibrary.o ProtocolLibrary.o MessageWriter.o Camera.o
+OBJ = server.o RobotHandler.o GPIOLibrary.o ProtocolLibrary.o MessageWriter.o Camera.o ExampleHandler.o UARTLibrary.o I2CLibrary.o
 OBJ_NETWORK = Netzwerk/ProzessPi.o Netzwerk/Funktion_zum_Umwandeln.o
 
 BIN = Server

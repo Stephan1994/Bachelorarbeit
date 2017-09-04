@@ -8,15 +8,10 @@ using std::to_string;
 
 using cv::Vec3b;
 
-Camera::Camera(){}
-
-Camera::Camera(MessageWriter *extWriter)
+bool Camera::initCamera(MessageWriter *extWriter, int camNr)
 {
-	if (!cam.open(0))
-	{
-		cout << "cannot open camera!" << endl;
-	}
 	writer = extWriter;
+	return cam.open(camNr);
 }
 
 Camera::~Camera()
@@ -33,7 +28,6 @@ string Camera::takePicture()
 		cam.read(cameraFrame);
 	}
 	
-	cout << "after taking picture" << endl;
 	return convertMatToString(cameraFrame);
 }
 

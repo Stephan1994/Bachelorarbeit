@@ -206,9 +206,9 @@ int SendeKommando(char *Kommando, char* Wert)
 	//printf("Bytes sent: %d ", BytesSent);
 	int fdNo_Senden = fileno(fd_senden);
 	if (len < maxWrite){
-		printf("in small write\n");
-		printf("%s\n", sendStr);
-		printf("Len: %d, strlen: %d\n", len, strlen(sendStr));
+		//printf("in small write\n");
+		//printf("%s\n", sendStr);
+		//printf("Len: %d, strlen: %d\n", len, strlen(sendStr));
 		//if(fprintf(fd_senden,"%s",sendStr) == 0)
 		int written = 0;
 		if((written = write(fdNo_Senden, sendStr, len)) < 0)

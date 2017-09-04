@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <thread>
-#include "RobotHandler.h"
+#include "ExampleHandler.h"
 #include "Netzwerk/ProzessPi.h"
 #include "MessageWriter.h"
 #include "ProtocolLibrary.h"
@@ -20,9 +20,8 @@ int main()
 	init((char *)"192.168.1.1", (char *) "5001");
 	MessageWriter writer;
 	writer.initWriting();
-	cout << "Test in server: " << writer.test << endl;
 	
-	RobotHandler handler(&writer);
+	ExampleHandler handler(&writer);
 	
 	while(true)
 	{

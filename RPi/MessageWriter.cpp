@@ -10,8 +10,6 @@ MessageWriter::MessageWriter()
 	:incoming()
 {
 	strncpy(RobotMessage, "Robot", sizeof(RobotMessage));
-	test = 9;
-	cout << "MessageWriter is created" << endl;
 }
 
 //loops to get a new message every time there's one available
