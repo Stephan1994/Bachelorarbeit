@@ -1,16 +1,18 @@
 
 #ifndef GPIOLIB_H
 #define GPIOLIB_H
+#define GPIOCOUNT 26
 
-#include <opencv2/opencv.hpp>
+#include<string>
 using std::string;
-using cv::Mat;
+
+
 class GPIOLibrary
 {
 	public:
-		static string takePictureUSB(int cam = 0);
-	private:
-		static string convertMatToString(Mat mat);
+		static bool initGPIO(int gpios[GPIOCOUNT][2]);
+		static bool setGPIO(int gpio, int level);
+		static int getGPIO(int gpio);
 };
 
 #endif //GPIOLIB_H

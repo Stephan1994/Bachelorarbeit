@@ -5,44 +5,34 @@ using std::cout;
 using std::endl;
 using std::to_string;
 
-using cv::VideoCapture;
-using cv::Vec3b;
+#include <wiringPi.h>
 
-//takes a picture from usb-webcam and returns a string containing the information
-string GPIOLibrary::takePictureUSB(int cam)
-{
-	VideoCapture camera;
-	cout << "In takePictureUSB." << endl;
-	if (!camera.open(cam)){
-		cout << "cannot open camera!" << endl;
-		return nullptr;
+//initializes the needed GPIO pins
+//gpios must contain the pin number with an additional number: 1 for input, 2 for output and everything else for not used
+//please use BCM-Pin numbers
+bool GPIOLibrary::initGPIO(int gpios[GPIOCOUNT][2]){
+	
+	wiringPiSetup();
+	for(int i = 0; i < GPIOCOUNT; i++){
+		if (gpios[i][1] == 1)
+			pinMode(gpios[i][0], INPUT);
+		else if (gpios[i][i] == 2)
+			pinMode(gpios[i][0], OUTPUT);
 	}
-	cout << "After open" << endl;
-	Mat cameraFrame;
-	camera.read(cameraFrame);
-	cout << "after taking picture" << endl;
-	camera.release();
-	return convertMatToString(cameraFrame);
+	return true;
 }
 
-//creates a string out of a cv::Mat matrix
-//shape of this string is without '(':
-//colsxrows|(bgr-values of one pixel divided by ',')(bgr-values of one pixel divided by ',')...|...|...(bgr-values of one pixel divided by ',')|end
-string GPIOLibrary::convertMatToString(Mat mat) {
-	string output = to_string(mat.cols) + "x" + to_string(mat.rows) + "|";
-	for(int row=0; row < mat.rows; row++){
-		for (int col = 0; col < mat.cols; col++) {
-			output += "(";
-			Vec3b bgrVector = mat.at<Vec3b>(row, col);
-			for (int rgb=0; rgb < 3; rgb++){
-				uchar posValue = bgrVector[rgb];
-				output += to_string(posValue);
-				output += ",";
-			}
-			output += ")";
-		}
-		output += "|";
-	}
-	output += "end";
-	return output;
+
+//give gpio pin number (BCM) and 0 for low-level or 1 for high
+bool GPIOLibrary::setGPIO(int gpio, int level){
+	if (level == 0)
+		digitalWrite(gpio, LOW);
+	else
+		digitalWrite(gpio, HIGH);
+	return true;
+}
+
+//give gpio pin number (BCM) and 0 for low-level or 1 for high
+int GPIOLibrary::getGPIO(int gpio){
+	return digitalRead(gpio);
 }
