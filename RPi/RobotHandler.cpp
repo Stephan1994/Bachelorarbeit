@@ -4,26 +4,13 @@
 
 #include "RobotHandler.h"
 
-#include "GPIOLibrary.h"
-#include <cmath>
-//MessageLength
-#define ML 8192
 
 using std::cout;
 using std::endl;
 using std::to_string;
 using std::map;
 using std::placeholders::_1;
-
-
-RobotHandler::RobotHandler(MessageWriter *extWriter)
-	:camera(extWriter)
-{
-	cout << "Test in Handler: " << extWriter->test << endl;
-    strncpy(RobotMessage, "Robot", sizeof(RobotMessage));
-	initFunctions();
-	//camera = new Camera(extWriter);
-}        
+       
 
 void RobotHandler::initFunctions()
 {
@@ -32,13 +19,17 @@ void RobotHandler::initFunctions()
 			{"connect", std::bind(&RobotHandler::connect, this, _1)},
 			{"disconnect", std::bind(&RobotHandler::closeConnection, this, _1)},
 			{"forward", std::bind(&RobotHandler::forward, this, _1)},
+			{"backward", std::bind(&RobotHandler::backward, this, _1)},
+			{"stop", std::bind(&RobotHandler::stop, this, _1)},
+			{"setSingleMotor", std::bind(&RobotHandler::setSingleMotorSpeed, this, _1)},
+			{"getSingleMotor", std::bind(&RobotHandler::getSingleMotorSpeed, this, _1)},
+			{"setLeftNRight", std::bind(&RobotHandler::setLeftNRightMotor, this, _1)},
+			{"distance", std::bind(&RobotHandler::getProximitySensor, this, _1)},
 			{"picture", std::bind(&RobotHandler::getPicture, this, _1)},
 			{"startVideo", std::bind(&RobotHandler::startVideo, this, _1)},
 			{"stopVideo", std::bind(&RobotHandler::stopVideo, this, _1)}
 		};
 }
-
-RobotHandler::~RobotHandler(){}
 
 string RobotHandler::connect(string value)
 {
@@ -53,7 +44,7 @@ string RobotHandler::closeConnection(string value)
 		camera.stopStreaming(); 
 	return "disconnected";
 }
-
+/*
 string RobotHandler::forward(string speed)
 {
 	cout << "forward called!" << endl;
@@ -94,4 +85,4 @@ string RobotHandler::stopVideo(string cam)
 	return "stoped";
 }
 
-
+*/
