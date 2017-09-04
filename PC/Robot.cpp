@@ -2,13 +2,12 @@
 // Created by Stephan on 13.06.17.
 //
 
+#include <iostream>
+#include <cstring>
 #include "Robot.h"
 
 #include "ProtocolLibrary.h"
-//MessageLength
-//#define ML 8192
-#include <iostream>
-#include <cstring>
+
 #include "Netzwerk/ProzessPiClient.h"
 
 using std::cout;
@@ -16,13 +15,6 @@ using std::endl;
 using std::to_string;
 
 //baseclass for robots. Should be the parent of future robots
-
-Robot::Robot() {
-    strncpy(RobotMessage, "Robot", sizeof(RobotMessage));
-    cout << "RobotMessage: " << RobotMessage << endl;
-}
-
-Robot::~Robot() = default;
 
 bool Robot::connect(string ip) {
     //convert ip string to char*
@@ -34,14 +26,13 @@ bool Robot::connect(string ip) {
     char portArray[5];
     strncpy(portArray, portstring.c_str(), sizeof(portArray));
     portArray[sizeof(portArray) - 1] = 0;
-    cout << "RobotMessage: " << RobotMessage << endl;
     //connect to the robot with help of extern Netzwerk-Library
     init(ipArray, portArray);
 
 
     //ToDo maybe get ipaddress
     char message[ML];
-    if (!ProtocolLibrary::createMessage(message, "connect", "IP"))
+    if (!ProtocolLibrary::createMessage(message, "connect", ""))
         return false;
 
     SendeKommando(RobotMessage, message);
@@ -57,7 +48,7 @@ bool Robot::connect(string ip) {
 
 bool Robot::closeConnection() {
     char message[ML];
-    if (ProtocolLibrary::createMessage(message, "disconnect", "IP"))
+    if (ProtocolLibrary::createMessage(message, "disconnect", ""))
         SendeKommando(RobotMessage, message);
 
     future<string> answerFuture = listener.addListener("disconnect");
@@ -81,6 +72,69 @@ bool Robot::forward(int speed) {
     return answer == "forwarded";
 }
 
+bool Robot::backward(int speed) {
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "backward", to_string(speed)))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("backward");
+    string answer = answerFuture.get();
+
+    return answer == "backwarded";
+}
+
+bool Robot::stop(int motor) {
+    char message[ML];
+    string value;
+    if (motor == 0)
+        value = "";
+    else
+        value = to_string(motor);
+    if (ProtocolLibrary::createMessage(message, "stop", value))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("stop");
+    string answer = answerFuture.get();
+
+    return answer == "stopped";
+}
+
+bool Robot::setSingleMotorSpeed(int motor, int speed) {
+    char message[ML];
+    string value = to_string(motor) + "," + to_string(speed);
+    if (ProtocolLibrary::createMessage(message, "setSingleMotor", value))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("setSingleMotor");
+    string answer = answerFuture.get();
+
+    return answer == "set";
+}
+
+int Robot::getSingleMotorSpeed(int motor) {
+    char message[ML];
+    string value = to_string(motor);
+    if (ProtocolLibrary::createMessage(message, "getSingleMotor", value))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("getSingleMotor");
+    string answer = answerFuture.get();
+
+    return std::stoi(answer);
+}
+
+bool Robot::setLeftNRightMotor(int leftSpeed, int rightSpeed){
+    char message[ML];
+    string value = to_string(leftSpeed) + "," + to_string(rightSpeed);
+    if (ProtocolLibrary::createMessage(message, "setLeftNRight", value))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("setLeftNRight");
+    string answer = answerFuture.get();
+
+    return answer == "set";
+}
+
 valarray<valarray<valarray<int>>> Robot::getPicture(int camera) {
     char message[ML];
     if (ProtocolLibrary::createMessage(message, "picture", to_string(camera)))
@@ -89,25 +143,18 @@ valarray<valarray<valarray<int>>> Robot::getPicture(int camera) {
     future<string> answerFuture = listener.addListener("picture");
     string answer = answerFuture.get();
 
-    cout << "after receiving picture." << endl;
-
-    //cv::Mat dataMat;
-    //cv::FileStorage fs(answer, cv::FileStorage::READ + cv::FileStorage::MEMORY);
-    //fs["pic"] >> dataMat;
-
-    //cout << "after transfer to Mat" << endl;
-
-    //std::vector<unsigned char> vectordata(answer.begin(), answer.end());
-
-    //cv::Mat dataMat(vectordata, true);
-
-    //cv::Mat picMat(cv::imdecode(dataMat,1));
-
-    //cout << "Height: " << picMat.rows << " Width: " << picMat.cols << endl;
-
-    //cv::imwrite("test.jpg", picMat);
-
     return Robot::convertStringToMat(answer);
+}
+
+double Robot::getProximitySensor(int sensor){
+    char message[ML];
+    if (ProtocolLibrary::createMessage(message, "distance", to_string(sensor)))
+        SendeKommando(RobotMessage, message);
+
+    future<string> answerFuture = listener.addListener("distance");
+    string answer = answerFuture.get();
+
+    return std::stod(answer);
 }
 
 std::list<valarray<valarray<valarray<int>>>>* Robot::startVideo(int cols, int rows) {

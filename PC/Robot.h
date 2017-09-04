@@ -13,29 +13,29 @@ using std::valarray;
 #include "MessageListener.h"
 #define PC_ROBOT_H
 
-#include <opencv2/opencv.hpp>
-
 #include <thread>
 using std::thread;
 
 
 class Robot {
 public:
-    enum SensorMode{ single, continous};
-    Robot();
+	enum {leftMotor = 1, rightMotor = 2};
+
+    Robot() = default;
 	std::list<valarray<valarray<valarray<int>>>> VideoBuffer;
-    virtual ~Robot();
- //   virtual void reset();
+    virtual ~Robot() = default;
+
     //connect this PC with the Robot who has ip
 	virtual bool connect(string ip);
 	virtual bool closeConnection();
 
     //motor
     virtual bool forward(int speed);
-//    virtual void backward(int speed);
-//    virtual void setSingleMotorSpeed(int motor, int speed);
-//    virtual void setCurveSpeed(int leftSpeed, int rightSpeed);
-//    virtual int getSingleMotorSpeed(int motor);
+    virtual bool backward(int speed);
+	virtual bool stop(int motor = 0);
+    virtual bool setSingleMotorSpeed(int motor, int speed);
+    virtual bool setLeftNRightMotor(int leftSpeed, int rightSpeed);
+    virtual int getSingleMotorSpeed(int motor);
 //    virtual int getMotorPosition(int motor);
 
     //for steppermotor
@@ -56,17 +56,14 @@ public:
 //    virtual int getMicrophone(int microphone, SensorMode mode = single);
 
     //sensors
-//    virtual int getProximitySensor(int sensor);
+    virtual double getProximitySensor(int sensor);
 //    virtual int getCompass();
 //    virtual int getLightSensor(int sensor);
 //    virtual int getAccelerometer();
 
 	//communication
 private:
-	/*bool createMessage(char* out, string command, string value, bool request = true);
-    string createHeader(bool request, string command, bool parted = false, int parts = 0, int partnr = 0);
-    int createSplittedMessage(char* out, string command, string value, bool request = true, int part = 0, int parts = 0);*/
-	char RobotMessage[6];
+    char RobotMessage[6] = "Robot";
     MessageListener listener;
 	thread videoThread;
 	bool stopVideoThread = false;

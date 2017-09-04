@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         printf("Öffne Fifos und Erstelle Client ! \n");
 
         // open FIFOs
-        if ((vonP = open("/tmp/PtoTCP", O_RDONLY | O_NONBLOCK | O_CREAT)) < 0)
+        if ((vonP = open("/tmp/PtoTCP", O_RDONLY | O_NONBLOCK | O_CREAT, 0666)) < 0)
         {
             printf("Pipe PtoTCPC open: ");
             fprintf(Log, "Netzwerk meldet:	Pipe PtoS open:  %s \n", strerror(errno));
@@ -84,7 +84,7 @@ int main(int argc, char *argv[]) {
             printf("\n");
         }
 
-        if ((zuP = open("/tmp/TCPtoP", O_WRONLY | O_CREAT)) < 0)  //
+        if ((zuP = open("/tmp/TCPtoP", O_WRONLY | O_CREAT, 0666)) < 0)  //
         {
             printf("\n Pipe TCPCtoP open: \n");
             fprintf(Log, "Netzwerk meldet:	Pipe StoP open:  %s \n", strerror(errno));
