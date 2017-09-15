@@ -52,13 +52,17 @@ SOURCES       = main.cpp \
 		MessageListener.cpp \
 		ProtocolLibrary.cpp \
 		Robot.cpp \
-		custommainwindow.cpp moc_custommainwindow.cpp
+		custommainwindow.cpp \
+		DistanceThread.cpp moc_custommainwindow.cpp \
+		moc_DistanceThread.cpp
 OBJECTS       = main.o \
 		MessageListener.o \
 		ProtocolLibrary.o \
 		Robot.o \
 		custommainwindow.o \
-		moc_custommainwindow.o
+		DistanceThread.o \
+		moc_custommainwindow.o \
+		moc_DistanceThread.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -119,11 +123,13 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		PC.pro MessageListener.h \
 		ProtocolLibrary.h \
 		Robot.h \
-		custommainwindow.h main.cpp \
+		custommainwindow.h \
+		DistanceThread.h main.cpp \
 		MessageListener.cpp \
 		ProtocolLibrary.cpp \
 		Robot.cpp \
-		custommainwindow.cpp
+		custommainwindow.cpp \
+		DistanceThread.cpp
 QMAKE_TARGET  = RobotGui
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = RobotGui
@@ -291,8 +297,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents MessageListener.h ProtocolLibrary.h Robot.h custommainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp MessageListener.cpp ProtocolLibrary.cpp Robot.cpp custommainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents MessageListener.h ProtocolLibrary.h Robot.h custommainwindow.h DistanceThread.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp MessageListener.cpp ProtocolLibrary.cpp Robot.cpp custommainwindow.cpp DistanceThread.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -315,14 +321,20 @@ check: first
 
 compiler_rcc_make_all:
 compiler_rcc_clean:
-compiler_moc_header_make_all: moc_custommainwindow.cpp
+compiler_moc_header_make_all: moc_custommainwindow.cpp moc_DistanceThread.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_custommainwindow.cpp
+	-$(DEL_FILE) moc_custommainwindow.cpp moc_DistanceThread.cpp
 moc_custommainwindow.cpp: Robot.h \
 		MessageListener.h \
 		ProtocolLibrary.h \
 		custommainwindow.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/stephan/Bachelorarbeit/PC -I/home/stephan/Bachelorarbeit/PC -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include custommainwindow.h -o moc_custommainwindow.cpp
+
+moc_DistanceThread.cpp: Robot.h \
+		MessageListener.h \
+		ProtocolLibrary.h \
+		DistanceThread.h
+	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/stephan/Bachelorarbeit/PC -I/home/stephan/Bachelorarbeit/PC -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/5 -I/usr/include/x86_64-linux-gnu/c++/5 -I/usr/include/c++/5/backward -I/usr/lib/gcc/x86_64-linux-gnu/5/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/5/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include DistanceThread.h -o moc_DistanceThread.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -364,8 +376,17 @@ custommainwindow.o: custommainwindow.cpp custommainwindow.h \
 		ProtocolLibrary.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o custommainwindow.o custommainwindow.cpp
 
+DistanceThread.o: DistanceThread.cpp DistanceThread.h \
+		Robot.h \
+		MessageListener.h \
+		ProtocolLibrary.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DistanceThread.o DistanceThread.cpp
+
 moc_custommainwindow.o: moc_custommainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_custommainwindow.o moc_custommainwindow.cpp
+
+moc_DistanceThread.o: moc_DistanceThread.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_DistanceThread.o moc_DistanceThread.cpp
 
 ####### Install
 

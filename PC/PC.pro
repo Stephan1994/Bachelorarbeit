@@ -17,10 +17,12 @@ QT += widgets
 HEADERS += MessageListener.h \
            ProtocolLibrary.h \
            Robot.h \
-    custommainwindow.h
+			custommainwindow.h \
+			DistanceThread.h
 
 SOURCES += main.cpp \
            MessageListener.cpp \
            ProtocolLibrary.cpp \
            Robot.cpp \
-    custommainwindow.cpp
+			custommainwindow.cpp\
+			DistanceThread.cpp

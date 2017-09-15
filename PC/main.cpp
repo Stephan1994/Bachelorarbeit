@@ -2,25 +2,25 @@
 #include "Robot.h"
 #include <unistd.h>
 #include <sys/time.h>
-//#include "custommainwindow.h"
+#include "custommainwindow.h"
 
-//#include <QApplication>
-//#include <QPushButton>
-//#include <QGridLayout>
+#include <QApplication>
+#include <QPushButton>
+#include <QGridLayout>
 
 using namespace std;
 int main(int argc, char **argv) {
-    //QApplication app (argc, argv);
+    QApplication app (argc, argv);
 
-    //CustomMainWindow *window = new CustomMainWindow();
-    //window->setWindowTitle("RobotGui");
-    //window->setFixedSize(480, 250);
+    CustomMainWindow *window = new CustomMainWindow();
+    window->setWindowTitle("RobotGui");
+    window->setFixedSize(480, 250);
 
 
-    //window->show();
+    window->show();
 
-    //QObject::connect(&app, SIGNAL(aboutToQuit()), window, SLOT(slotDisconnect()));
-
+    QObject::connect(&app, SIGNAL(aboutToQuit()), window, SLOT(slotDisconnect()));
+/*
     Robot rob;
     bool connected = rob.connect("192.168.1.1");
     if (connected)
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 
     rob.stop();
     rob.closeConnection();
-
+*/
   /*  double distance = rob.getProximitySensor(0);
     cout << "distance: " << distance << endl;
 	rob.forward(200);
@@ -75,6 +75,6 @@ int main(int argc, char **argv) {
     //pic = rob.getPicture();
     //cout << pic << endl;
     //rob.closeConnection();
-    //return app.exec();
-    return 0;
+    return app.exec();
+    //return 0;
 }
